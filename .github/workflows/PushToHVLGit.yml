@@ -27,4 +27,4 @@ jobs:
         shell: bash
         run: |
           git remote add hvlGit https://ider-database.westeurope.cloudapp.azure.com/Bonobo.Git.Server/DAT109-Prosjekt-TexasHoldem.git
-          git push hvlGit HEAD:main
+          git push hvlGit HEAD:main -v
