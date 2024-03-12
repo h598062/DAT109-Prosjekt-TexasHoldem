@@ -1,27 +1,50 @@
 @startuml
-'https://plantuml.com/class-diagram
-
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+top to bottom direction
+class "spiller" {
+    kort : kort
+    chips : int
+    status : Enum(erDealer, BB,SB)
+    trekk : Enum(call,check, fold,raise, all-in)
 }
-
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+class "lobby"{
+    spiller
+    bord
 }
+class "kort" {
+    antall : final static int(52)
+    type : ENUM(kløver,spar,hjerte,ruter)
+    verdi : enum(2-Ess)
+}
+class "bord" {
+    kort
+    chips : int
+}
+class "web-controllere"
+class "database-servicer"
+class springInit
+class nettwork
+
+
+
+lobby -right->  bord
+spiller - kort
+bord - spiller
+bord  -down->  kort
+
+lobby -down-> "database-servicer"
+lobby <-down- "web-controllere"
+
+
+
+"database-servicer"  -down-> "web-controllere"
+
+springInit -down-> "web-controllere"
+springInit -down-> "database-servicer"
+
+nettwork <-down-> lobby
+nettwork <-down-> spiller
+nettwork <-down-> "web-controllere"
+
+"web-controllere" -down-> view
 
 @enduml
