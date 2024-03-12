@@ -16,8 +16,12 @@ jobs:
           HVLGITUSERNAME: ${{ secrets.HVLGITUSERNAME }}
           HVLGITPASS: ${{ secrets.HVLGITPASS }}
         run: |
+          echo 'echo $HVLGITUSERNAME' > git-askpass.sh
+          echo 'echo $HVLGITPASS' >> git-askpass.sh
+          chmod +x git-askpass.sh
           git config --global user.name "$HVLGITUSERNAME"
           git config --global user.password "$HVLGITPASS"
+          git config --global core.askpass $PWD/git-askpass.sh
 
       - name: Push changes
         shell: bash
