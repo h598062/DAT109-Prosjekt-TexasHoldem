@@ -1,0 +1,59 @@
+@startuml
+top to bottom direction
+class "spiller" {
+    kort : kort
+    chips : int
+    status : Enum(erDealer, BB,SB)
+    trekk : Enum(call,check, fold,raise, all-in)
+    velgtrekk()
+
+
+}
+class "lobby"{
+    spiller
+    bord
+    leggSpiller()
+    fjernSpiller()
+    startSpill()
+
+
+}
+class "kort" {
+    antall : final static int(52)
+    type : ENUM(kløver,spar,hjerte,ruter)
+    verdi : enum(2-Ess)
+}
+class "bord" {
+    kort
+    chips : int
+
+}
+class "web-controllere"
+class "database-servicer"
+class springInit
+class network
+
+
+
+lobby -right->  bord
+spiller - kort
+bord - spiller
+bord  -down->  kort
+
+lobby -down-> "database-servicer"
+lobby <-down- "web-controllere"
+
+
+
+"database-servicer"  -down-> "web-controllere"
+
+springInit -down-> "web-controllere"
+springInit -down-> "database-servicer"
+
+network <-down-> lobby
+network <-down-> spiller
+network <-down-> "web-controllere"
+
+"web-controllere" -down-> view
+
+@enduml
