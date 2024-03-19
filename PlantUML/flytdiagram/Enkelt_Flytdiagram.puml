@@ -1,0 +1,71 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:Åpne Nettsiden;
+
+repeat
+    :Skriv inn ønsket brukernavn;
+repeat while (Brukernavn ledig?) is (no)
+->yes;
+
+:Vis Hovedsiden;
+fork
+    :Lag ny lobby;
+    :Vis Lobby siden;
+    split
+        #green:spillserver;
+        :Opprett nytt spill;
+        :Opprett en spiller;
+        :Sett spiller til lobbyleder;
+        :åpne websocket til lobbyleder;
+        :Legg til spiller i lobby liste;
+    split again
+        #green:webside;
+        :Vis lobbyliste;
+    end split
+    repeat
+        :Vent på nye spillere;
+    repeat while (Lobbyleder har startet spillet?) is (no)
+    ->yes;
+fork again
+    :Bli med i en lobby;
+    split
+        #green:spillserver;
+        :Opprett en spiller;
+        :åpne websocket til spilleren;
+        :Legg til spiller i lobby liste;
+    split again
+        #green:webside;
+        :Vis lobbyliste;
+    end split
+    repeat
+        :Vent på at lobbyleder starter spillet;
+    repeat while (Lobbyleder har startet spillet?) is (no)
+    ->yes;
+end fork
+:Start spill;
+:Vis spillbrett;
+while (spill spillet)
+    :Del ut kort;
+    while (flere trekk igjen)
+        :få trekk fra spiller;
+        note right: Raise, Call, Fold
+    endwhile
+    repeat
+        :Vis trekk;
+        :Flip kort;
+        while (flere trekk igjen)
+            :få trekk fra spiller;
+            note right: Raise, Call, Fold
+        endwhile
+    repeat while (flere kort igjen på bordet må snus) is (yes)
+    ->no;
+    :Vis kort;
+    :Finn Vinner;
+endwhile
+
+:Send tilbake til hovedside;
+stop
+
+@enduml
