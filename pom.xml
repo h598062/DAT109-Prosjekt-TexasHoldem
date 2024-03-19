@@ -11,6 +11,7 @@
     <groupId>no.hvl.dat109</groupId>
     <artifactId>TexasHoldem</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
     <name>DAT109-Prosjekt-TexasHoldem</name>
     <description>DAT109-Prosjekt-TexasHoldem</description>
     <properties>
@@ -65,11 +66,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <scope>annotationProcessor</scope>
         </dependency>
     </dependencies>
 
