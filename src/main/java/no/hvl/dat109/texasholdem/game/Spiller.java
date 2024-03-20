@@ -3,8 +3,10 @@ package no.hvl.dat109.texasholdem.game;
 import no.hvl.dat109.texasholdem.Enums.Status;
 import no.hvl.dat109.texasholdem.Enums.Trekk;
 
+import java.util.Set;
+
 public class Spiller {
-    private Kort kort;
+    private Set<Kort> hand;
     private int chips;
     private String navn;
     private Status status;
@@ -16,6 +18,12 @@ public class Spiller {
 
     private void dinTur() {
 
+    }
+
+    
+
+    private void emptyHand() {
+        hand.clear();
     }
 
     public Status getStatus() {
