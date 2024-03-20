@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StatistikkRepo extends JpaRepository<Statistikk,Integer> {
+    /*
     List<Statistikk> finnAntallVunnetHenderStorreEnn(int antallVunnet);
     List<Statistikk> findByHoyesteHaand(HaandKombinasjon haandKombinasjon);
 
     List<Statistikk> finnSpillereMedPositivNettoGevinst();
 
     Optional<Statistikk> findByRunde(int runde);
-
+*/
 }
