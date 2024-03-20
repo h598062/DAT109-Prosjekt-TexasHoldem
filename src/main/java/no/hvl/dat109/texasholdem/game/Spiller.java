@@ -6,7 +6,7 @@ import no.hvl.dat109.texasholdem.Enums.Trekk;
 import java.util.Set;
 
 public class Spiller {
-    private Set<Kort> hand;
+    private Hand hand;
     private int chips;
     private String navn;
     private Status status;
@@ -16,11 +16,18 @@ public class Spiller {
 
     }
 
+    /**
+     * Trekker ett kort fra kortstokken og legger det til i hånden
+     * @param ks (kortstokk)
+     */
+    public void drawCard(Kortstokk ks) {
+        Kort kort = ks.trekKort();
+        hand.addCard(kort);
+    }
+
     private void dinTur() {
 
     }
-
-    
 
     private void emptyHand() {
         hand.clear();

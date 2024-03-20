@@ -4,7 +4,6 @@ import no.hvl.dat109.texasholdem.Enums.Korttype;
 
 
 public class Kort {
-    private final static int ANTALL_KORT = 52;
     private Korttype korttype;
     private int verdi;
 
@@ -15,6 +14,7 @@ public class Kort {
         this.korttype = korttype;
         this.verdi = verdi;
     }
+
 
     public int getVerdi() {
         return verdi;
