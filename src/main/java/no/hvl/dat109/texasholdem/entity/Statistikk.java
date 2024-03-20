@@ -21,7 +21,7 @@ public class Statistikk {
     private HaandKombinasjon hoyesteHaand;
     @Column(name="totaltVunnetBelop", length = 40)
     private double totaltVunnetBelop;
-    @Column(name="totaltVunnetBelop", length = 40)
+    @Column(name="totaltTaptBelop", length = 40)
     private double totaltTaptBelop;
     @Column(name="storstePottVunnet", length = 40)
 
