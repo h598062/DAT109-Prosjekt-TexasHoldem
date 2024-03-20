@@ -12,6 +12,11 @@ public class HovedsideController {
     @Autowired
     private LobbyService lobbyService;
 
+    /**
+     * Controller som henter oss inn på hovedside
+     * @param model For å sende ting videre
+     * @return JSP Fil
+     */
     @GetMapping("/")
     public String getIndex(Model model) {
         model.addAttribute("lobbies", lobbyService.getLobbies());

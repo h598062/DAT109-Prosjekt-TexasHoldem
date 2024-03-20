@@ -11,12 +11,21 @@ import java.util.List;
 public class LobbyService {
     private List<Lobby> lobbies = new ArrayList<>();
 
+
+    /**
+     * Lager en lobby og legger den til i listen med alle lobbies
+     * @return Lobby
+     */
     public Lobby createLobby() {
         Lobby lobby = new Lobby();
         lobbies.add(lobby);
         return lobby;
     }
 
+    /**
+     * Fjerner en lobby
+     * @param lobby
+     */
     public void removeLobby(Lobby lobby) {
         lobbies.remove(lobby);
     }
