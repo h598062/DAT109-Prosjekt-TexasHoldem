@@ -1,4 +1,4 @@
-package no.hvl.dat109.texasholdem.game;
+package no.hvl.dat109.texasholdem.entity;
 
 
 import jakarta.persistence.Column;
