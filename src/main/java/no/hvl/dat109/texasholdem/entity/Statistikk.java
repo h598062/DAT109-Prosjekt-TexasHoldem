@@ -1,11 +1,10 @@
 package no.hvl.dat109.texasholdem.entity;
-
+/*
 import jakarta.persistence.*;
-import no.hvl.dat109.texasholdem.Enums.HaandKombinasjon;
-
+import no.hvl.dat109.texasholdem.enums.HaandKombinasjon;
 
 @Entity
-@Table(schema ="TexasHoldem", name = "statistikk")
+@Table(schema = "TexasHoldem", name = "statistikk")
 public class Statistikk {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -121,3 +120,4 @@ public class Statistikk {
         this.storstPottVunnet = storstPottVunnet;
     }
 }
+*/
