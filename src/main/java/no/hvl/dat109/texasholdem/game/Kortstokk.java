@@ -1,6 +1,6 @@
 package no.hvl.dat109.texasholdem.game;
 
-import no.hvl.dat109.texasholdem.Enums.Korttype;
+import no.hvl.dat109.texasholdem.enums.Korttype;
 
 import java.util.ArrayList;
 import java.util.Collections;
