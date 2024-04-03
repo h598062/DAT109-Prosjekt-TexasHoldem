@@ -76,7 +76,7 @@ public class LobbyWebSocketController {
 	 * @param spillerNavn navnet på spilleren, må være sjekket først
 	 * @param message     meldingen som skal sendes
 	 */
-	private void sendUserError(String spillerNavn, String message) {
+	private void sendBrukerMelding(String spillerNavn, String message) {
 		messagingTemplate.convertAndSend("/spiller/" + UriUtils.encode(spillerNavn, StandardCharsets.UTF_8), message);
 	}
 
@@ -92,14 +92,14 @@ public class LobbyWebSocketController {
 	private Lobby sjekkLobby(String spillerNavn, String lobbyId) {
 		if (lobbyId == null || lobbyId.isBlank()) {
 			logger.warn("LobbyId is missing or blank in message from: {}", spillerNavn);
-			sendUserError(spillerNavn, "Melding mangler lobbyId");
+			sendBrukerMelding(spillerNavn, "Melding mangler lobbyId");
 			throw new IllegalArgumentException("LobbyId is missing or blank");
 		}
 		logger.info("lobbyer: {}", lobbyService.getLobbies());
 		Lobby lobby = lobbyService.getLobby(lobbyId);
 		if (lobby == null) {
 			logger.warn("Lobby {} does not exist", lobbyId);
-			sendUserError(spillerNavn, String.format("Lobby %s finnes ikke", lobbyId));
+			sendBrukerMelding(spillerNavn, String.format("Lobby %s finnes ikke", lobbyId));
 			throw new IllegalArgumentException("Lobby does not exist");
 		}
 		return lobby;
@@ -118,8 +118,8 @@ public class LobbyWebSocketController {
 		Spiller spiller = lobby.getSpiller(spillerNavn);
 		if (spiller == null) {
 			logger.warn("Spiller {} does not exist in lobby {}", spillerNavn, lobby.getLobbyId());
-			sendUserError(spillerNavn,
-			              String.format("Spiller %s finnes ikke i lobby %s", spillerNavn, lobby.getLobbyId()));
+			sendBrukerMelding(spillerNavn,
+			                  String.format("Spiller %s finnes ikke i lobby %s", spillerNavn, lobby.getLobbyId()));
 			throw new IllegalArgumentException("Spiller does not exist in lobby");
 		}
 		return spiller;
