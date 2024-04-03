@@ -35,7 +35,7 @@ public class TexasHoldemGame {
 
 	private void velgNesteSpiller() {
 		// velg neste spiller fra ikkeGjortSineTrekkListe
-		spillerSinTur = ikkeGjortSineTrekk.getFirst();
+		spillerSinTur = ikkeGjortSineTrekk.get(0);
 	}
 
 	public void call(Spiller spiller) {
@@ -61,6 +61,6 @@ public class TexasHoldemGame {
 	public void startSpill() {
 		if (erStartet) return;
 		erStartet = true;
-		spillerSinTur = ikkeGjortSineTrekk.getFirst(); // velg den første i listen til å begynne
+		spillerSinTur = ikkeGjortSineTrekk.get(0); // velg den første i listen til å begynne
 	}
 }
