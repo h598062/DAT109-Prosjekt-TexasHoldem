@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Lobby {
-	Logger logger = LoggerFactory.getLogger(Lobby.class);
-
 	private final String lobbyId;
 	private final ConcurrentHashMap<String, Spiller> spillere;
 	private final Spiller lobbyLeder;
+	Logger logger = LoggerFactory.getLogger(Lobby.class);
 	private Kortstokk kortstokk;
+	private TexasHoldemGame game;
 
 	public Lobby(String lobbyId, String lobbyLederNavn) {
 		this.lobbyId = lobbyId;
@@ -28,11 +28,20 @@ public class Lobby {
 	 * Dealer kort til hver spiller som er i listen.
 	 */
 	public void dealCards() {
-		spillere.forEach((n,s) -> {
+		spillere.forEach((n, s) -> {
 			// n blir string navn til spilleren (key) i map, brukes ikke her
 			s.drawCard(kortstokk);
 			s.drawCard(kortstokk);
 		});
+	}
+
+	/**
+	 * Metode skal kalles når spillet i lobbyen skal startes.
+	 */
+	public void start() {
+		// TODO: Ferdigstill start-sekvens
+		game = new TexasHoldemGame((List<Spiller>) spillere.values());
+		game.startSpill();
 	}
 
 	public String getLobbyId() {
@@ -72,6 +81,7 @@ public class Lobby {
 
 	/**
 	 * Returnerer en liste med navn på alle spillere i denne lobbyen
+	 *
 	 * @return liste med navn på alle spillere i denne lobbyen
 	 */
 	public synchronized List<String> getSpillernesNavn() {
@@ -79,4 +89,5 @@ public class Lobby {
 		logger.info("spillere {}", list);
 		return list;
 	}
+
 }

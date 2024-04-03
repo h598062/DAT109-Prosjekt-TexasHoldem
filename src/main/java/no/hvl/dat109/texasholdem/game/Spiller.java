@@ -37,7 +37,15 @@ public class Spiller {
         hand.clear();
     }
 
-    public Status getStatus() {
+	public int getChips() {
+		return chips;
+	}
+
+	public void setChips(int chips) {
+		this.chips = chips;
+	}
+
+	public Status getStatus() {
         return status;
     }
 

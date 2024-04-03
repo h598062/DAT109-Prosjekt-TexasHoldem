@@ -11,11 +11,13 @@ public class LobbyTrekkMessage extends LobbyMessage {
 	 */
 	private String spillerNavn;
 	private Trekk trekk;
+	private int mengde;
 
-	public LobbyTrekkMessage(String lobbyId, String spillerNavn, Trekk trekk) {
+	public LobbyTrekkMessage(String lobbyId, String spillerNavn, Trekk trekk, int mengde) {
 		super(lobbyId);
 		this.spillerNavn = spillerNavn;
 		this.trekk = trekk;
+		this.mengde = mengde;
 	}
 
 	/**
@@ -23,6 +25,14 @@ public class LobbyTrekkMessage extends LobbyMessage {
 	 * Lager du meldingen selv, bruk konstruktøren med parametre.
 	 */
 	public LobbyTrekkMessage() {
+	}
+
+	public int getMengde() {
+		return mengde;
+	}
+
+	public void setMengde(int mengde) {
+		this.mengde = mengde;
 	}
 
 	public String getSpillerNavn() {
