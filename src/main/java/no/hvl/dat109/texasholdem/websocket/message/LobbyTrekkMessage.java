@@ -12,12 +12,14 @@ public class LobbyTrekkMessage extends LobbyMessage {
 	private String spillerNavn;
 	private Trekk trekk;
 	private int mengde;
+	private String nesteSpillerNavn;
 
-	public LobbyTrekkMessage(String lobbyId, String spillerNavn, Trekk trekk, int mengde) {
+	public LobbyTrekkMessage(String lobbyId, String spillerNavn, Trekk trekk, int mengde, String nesteSpillerNavn) {
 		super(lobbyId);
 		this.spillerNavn = spillerNavn;
 		this.trekk = trekk;
 		this.mengde = mengde;
+		this.nesteSpillerNavn = nesteSpillerNavn;
 	}
 
 	/**
@@ -50,6 +52,15 @@ public class LobbyTrekkMessage extends LobbyMessage {
 	public void setTrekk(Trekk trekk) {
 		this.trekk = trekk;
 	}
+
+	public String getNesteSpillerNavn() {
+		return nesteSpillerNavn;
+	}
+
+	public void setNesteSpillerNavn(String nesteSpillerNavn) {
+		this.nesteSpillerNavn = nesteSpillerNavn;
+	}
+
 
 	@Override
 	public String toString() {

@@ -56,8 +56,11 @@
     const spillerNavn = '${spillerNavn}';
     console.log('Lobby: ' + lobbyId);
     console.log('Spiller: ' + spillerNavn);
-
-    const client = new Client({brokerURL: 'ws://localhost:8080/lobby-ws'});
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    console.log('Protocol: ' + protocol);
+    const host = window.location.host;
+    console.log('Host: ' + host);
+    const client = new Client({brokerURL: protocol + "//" + host + "/lobby-ws"});
     client.onConnect = (frame) => {
         console.log('Connected: ' + frame);
         client.subscribe('/lobbystatus/' + lobbyId, handleMessage);

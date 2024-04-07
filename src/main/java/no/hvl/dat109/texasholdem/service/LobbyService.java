@@ -4,8 +4,9 @@ import no.hvl.dat109.texasholdem.enums.Action;
 import no.hvl.dat109.texasholdem.enums.Trekk;
 import no.hvl.dat109.texasholdem.game.Lobby;
 import no.hvl.dat109.texasholdem.game.Spiller;
+import no.hvl.dat109.texasholdem.game.TexasHoldemGame;
+import no.hvl.dat109.texasholdem.game.VinnerException;
 import no.hvl.dat109.texasholdem.websocket.LobbyAlreadyExistsException;
-import no.hvl.dat109.texasholdem.websocket.message.LobbyActionMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class LobbyService {
 	 * ingen direkte tilgang til lobbies hashmap utenfor denne klassen
 	 */
 	private final ConcurrentHashMap<String, Lobby> lobbies;
-	private final SpillerMeldingService bms;
+	private final SpillerMeldingService            sms;
 	Logger logger = LoggerFactory.getLogger(LobbyService.class);
 
 	/**
@@ -34,9 +35,9 @@ public class LobbyService {
 	 * Bruk @Autowired for å få en instans av denne klassen.
 	 */
 	@Autowired
-	public LobbyService(SpillerMeldingService bms) {
+	public LobbyService(SpillerMeldingService sms) {
 		this.lobbies = new ConcurrentHashMap<>();
-		this.bms = bms;
+		this.sms     = sms;
 	}
 
 	/**
@@ -81,16 +82,13 @@ public class LobbyService {
 	 *
 	 * @return Boolean True om det gikk, false om det ikke gikk
 	 */
-	public boolean doTrekk(String lobbyId, String spillerNavn, Trekk trekk, int mengde) {
-		// TODO: lag og/eller finn metoder etc for å hente de under
-		// finn lobby
+	public Spiller doTrekk(String lobbyId, String spillerNavn, Trekk trekk, int mengde) throws VinnerException {
 
-		// hent ut game
+		Lobby lobby = finnLobby(spillerNavn, lobbyId);
+		TexasHoldemGame game = lobby.getGame();
+		Spiller spiller = finnSpiller(spillerNavn, lobby);
 
-		// finn spiller
-
-		// TODO end
-
+		Spiller nesteSpiller = null;
 		switch (trekk) {
 			case CALL:
 				logger.info("Spiller {} har callet i lobbyen {}", spillerNavn, lobbyId);
@@ -114,8 +112,10 @@ public class LobbyService {
 			case RAISE:
 				logger.info("Spiller {} har raiset med {} i lobbyen {}", spillerNavn, mengde, lobbyId);
 				logger.error("RAISE er ikke implementert");
-				// TODO: Implementer raise
+				// TODO: Ferdigstill raise implementasjon
 				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
+
+				nesteSpiller = game.raise(spiller, mengde);
 				break;
 			case ALL_IN:
 				logger.info("Spiller {} har gått ALL INN i lobbyen {}", spillerNavn, lobbyId);
@@ -124,7 +124,7 @@ public class LobbyService {
 				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 		}
-		return false;
+		return nesteSpiller;
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class LobbyService {
 		Spiller spiller = lobby.getSpiller(spillerNavn);
 		if (spiller == null) {
 			logger.warn("Spiller {} does not exist in lobby {}", spillerNavn, lobby.getLobbyId());
-			bms.sendMelding(spillerNavn,
+			sms.sendMelding(spillerNavn,
 			                String.format("Spiller %s finnes ikke i lobby %s", spillerNavn, lobby.getLobbyId()));
 			throw new IllegalArgumentException("Spiller does not exist in lobby");
 		}
@@ -157,14 +157,14 @@ public class LobbyService {
 	private Lobby finnLobby(String spillerNavn, String lobbyId) {
 		if (lobbyId == null || lobbyId.isBlank()) {
 			logger.warn("LobbyId is missing or blank in message from: {}", spillerNavn);
-			bms.sendMelding(spillerNavn, "Melding mangler lobbyId");
+			sms.sendMelding(spillerNavn, "Melding mangler lobbyId");
 			throw new IllegalArgumentException("LobbyId is missing or blank");
 		}
 		logger.info("lobbyer: {}", getLobbies());
 		Lobby lobby = getLobby(lobbyId);
 		if (lobby == null) {
 			logger.warn("Lobby {} does not exist", lobbyId);
-			bms.sendMelding(spillerNavn, String.format("Lobby %s finnes ikke", lobbyId));
+			sms.sendMelding(spillerNavn, String.format("Lobby %s finnes ikke", lobbyId));
 			throw new IllegalArgumentException("Lobby does not exist");
 		}
 		return lobby;
@@ -211,7 +211,7 @@ public class LobbyService {
 			case JOIN:
 				logger.info("Spiller {} har joinet lobbyen {}", spillerNavn, lobbyId);
 				logger.error("JOIN er ikke ferdig implementert");
-				// TODO: Ferdigstill join implementasjon
+				// TODO: Ferdigstill join implementasjon?
 				lobby.leggTilSpiller(spiller);
 				suksess = true;
 				break;
@@ -219,36 +219,44 @@ public class LobbyService {
 				logger.info("Spiller {} har forlatt lobbyen {} ", spillerNavn, lobbyId);
 				logger.error("LEAVE er ikke implementert");
 				// TODO: Implementer leave
+				// ikke viktig for første demo
 				break;
 			case AFK:
 				logger.info("Spiller {} er AFK i lobbyen {} ", spillerNavn, lobbyId);
 				logger.error("AFK er ikke implementert");
 				// TODO: Implementer AFK
+				// ikke viktig for første demo
 				break;
 			case READY:
 				logger.info("Spiller {} er klar i lobbyen {} ", spillerNavn, lobbyId);
 				logger.error("READY er ikke implementert");
 				// TODO: Implementer ready
+				// ikke viktig for første demo
 				break;
 			case UNREADY:
 				logger.info("Spiller {} er ikke klar i lobbyen {} ", spillerNavn, lobbyId);
 				logger.error("UNREADY er ikke implementert");
 				// TODO: Implementer unready
+				// ikke viktig for første demo
 				break;
 			case DISCONNECT:
 				logger.info("Spiller {} har blitt disconnected i lobbyen {} ", spillerNavn, lobbyId);
 				logger.error("DISCONNECT er ikke implementert");
 				// TODO: Implementer disconnect
+				// ikke viktig for første demo
 				break;
 			case START:
 				logger.info("Spiller {} prøver å starte spillet i lobbyen {} ", spillerNavn, lobbyId);
 				logger.error("START er ikke implementert");
 				// TODO: Gjør ferdig start implementasjon
+
+				// her må det opprettes et nytt TexasHoldemGame objekt og lagre det i lobbyen
 				break;
 			case END:
 				logger.info("Spiller {} prøver å stoppe spillet i lobbyen {} ", spillerNavn, lobbyId);
 				logger.error("END er ikke implementert");
 				// TODO: Implementer end
+				// ikke viktig for første demo
 				break;
 		}
 		return suksess;

@@ -3,6 +3,7 @@ package no.hvl.dat109.texasholdem.controller;
 import no.hvl.dat109.texasholdem.enums.Action;
 import no.hvl.dat109.texasholdem.game.Lobby;
 import no.hvl.dat109.texasholdem.game.Spiller;
+import no.hvl.dat109.texasholdem.game.VinnerException;
 import no.hvl.dat109.texasholdem.service.SpillerMeldingService;
 import no.hvl.dat109.texasholdem.service.LobbyService;
 import no.hvl.dat109.texasholdem.websocket.message.*;
@@ -87,11 +88,16 @@ public class LobbyWebSocketController {
 			return null;
 		}
 
-		boolean okTrekk = lobbyService.doTrekk(lobbyId, message.getSpillerNavn(), message.getTrekk(),
-		                                       message.getMengde());
+		Spiller nesteSpiller = null;
+		try {
+			nesteSpiller = lobbyService.doTrekk(lobbyId, message.getSpillerNavn(), message.getTrekk(),
+			                                       message.getMengde());
+		} catch (VinnerException e) {
+			throw new RuntimeException(e);
+		}
 		// TODO: gjør noe med returverdi fra metoden over^^ og send retur melding til lobby
-		if (okTrekk) {
-			return new LobbyTrekkMessage(lobbyId, message.getSpillerNavn(), message.getTrekk(), message.getMengde());
+		if (nesteSpiller != null) {
+			return new LobbyTrekkMessage(lobbyId, message.getSpillerNavn(), message.getTrekk(), message.getMengde(), nesteSpiller.getNavn());
 		} else {
 			return null;
 		}

@@ -13,35 +13,23 @@ public class Lobby {
 	private final ConcurrentHashMap<String, Spiller> spillere;
 	private final Spiller lobbyLeder;
 	Logger logger = LoggerFactory.getLogger(Lobby.class);
-	private Kortstokk kortstokk;
 	private TexasHoldemGame game;
 
 	public Lobby(String lobbyId, String lobbyLederNavn) {
 		this.lobbyId = lobbyId;
 		this.spillere = new ConcurrentHashMap<>();
-		kortstokk = new Kortstokk();
 		this.lobbyLeder = new Spiller(lobbyLederNavn);
 		spillere.put(lobbyLederNavn, this.lobbyLeder);
 	}
 
-	/**
-	 * Dealer kort til hver spiller som er i listen.
-	 */
-	public void dealCards() {
-		spillere.forEach((n, s) -> {
-			// n blir string navn til spilleren (key) i map, brukes ikke her
-			s.drawCard(kortstokk);
-			s.drawCard(kortstokk);
-		});
-	}
 
 	/**
 	 * Metode skal kalles når spillet i lobbyen skal startes.
 	 */
-	public void start() {
+	public Spiller start() {
 		// TODO: Ferdigstill start-sekvens
 		game = new TexasHoldemGame((List<Spiller>) spillere.values());
-		game.startSpill();
+		return game.startSpill();
 	}
 
 	public String getLobbyId() {
@@ -90,4 +78,11 @@ public class Lobby {
 		return list;
 	}
 
+	public TexasHoldemGame getGame() {
+		return game;
+	}
+
+	public void setGame(TexasHoldemGame game) {
+		this.game = game;
+	}
 }
