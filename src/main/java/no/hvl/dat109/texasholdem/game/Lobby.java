@@ -1,5 +1,6 @@
 package no.hvl.dat109.texasholdem.game;
 
+import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,15 +10,17 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Lobby {
-	private final String lobbyId;
+	private final String                             lobbyId;
 	private final ConcurrentHashMap<String, Spiller> spillere;
-	private final Spiller lobbyLeder;
+	private final Spiller                            lobbyLeder;
+	private final LobbyMeldingService                lms;
 	Logger logger = LoggerFactory.getLogger(Lobby.class);
 	private TexasHoldemGame game;
 
-	public Lobby(String lobbyId, String lobbyLederNavn) {
-		this.lobbyId = lobbyId;
-		this.spillere = new ConcurrentHashMap<>();
+	public Lobby(LobbyMeldingService lms, String lobbyId, String lobbyLederNavn) {
+		this.lms        = lms;
+		this.lobbyId    = lobbyId;
+		this.spillere   = new ConcurrentHashMap<>();
 		this.lobbyLeder = new Spiller(lobbyLederNavn);
 		spillere.put(lobbyLederNavn, this.lobbyLeder);
 	}
@@ -28,7 +31,7 @@ public class Lobby {
 	 */
 	public Spiller start() {
 		// TODO: Ferdigstill start-sekvens
-		game = new TexasHoldemGame((List<Spiller>) spillere.values());
+		game = new TexasHoldemGame(lms, lobbyId, (List<Spiller>) spillere.values());
 		return game.startSpill();
 	}
 

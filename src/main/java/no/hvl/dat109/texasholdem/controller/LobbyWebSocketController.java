@@ -1,17 +1,17 @@
 package no.hvl.dat109.texasholdem.controller;
 
-import no.hvl.dat109.texasholdem.game.Spiller;
 import no.hvl.dat109.texasholdem.game.VinnerException;
-import no.hvl.dat109.texasholdem.service.SpillerMeldingService;
 import no.hvl.dat109.texasholdem.service.LobbyService;
-import no.hvl.dat109.texasholdem.websocket.message.*;
+import no.hvl.dat109.texasholdem.service.SpillerMeldingService;
+import no.hvl.dat109.texasholdem.websocket.message.SpillerActionMessage;
+import no.hvl.dat109.texasholdem.websocket.message.SpillerMessage;
+import no.hvl.dat109.texasholdem.websocket.message.SpillerTrekkMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Controller;
 public class LobbyWebSocketController {
 	private static final Logger logger = LoggerFactory.getLogger(LobbyWebSocketController.class);
 
-	private final LobbyService lobbyService;
+	private final LobbyService          lobbyService;
 	private final SpillerMeldingService sms;
 
 	/**
@@ -41,7 +41,7 @@ public class LobbyWebSocketController {
 	@Autowired
 	public LobbyWebSocketController(LobbyService lobbyService, SpillerMeldingService sms) {
 		this.lobbyService = lobbyService;
-		this.sms = sms;
+		this.sms          = sms;
 	}
 
 	/**
@@ -51,7 +51,11 @@ public class LobbyWebSocketController {
 	 *
 	 * @return true hvis meldingen er ugyldig, false ellers
 	 */
-	private boolean erUgyldigMelding(SpillerMessage message) {
+	private boolean ugyldigMelding(String lobbyId, SpillerMessage message) {
+		if (lobbyId == null || lobbyId.isBlank()) {
+			logger.warn("LobbyId is missing or blank in message: {}", message);
+			return true;
+		}
 		if (message == null) {
 			logger.warn("Message is null");
 			return true;
@@ -73,31 +77,17 @@ public class LobbyWebSocketController {
 	 * @return melding som skal broadcastes til alle i lobbyen, eller null hvis ingenting skal oppdateres
 	 */
 	@MessageMapping("/trekk/{lobbyId}")
-	@SendTo("/lobbystatus/{lobbyId}")
-	public LobbyTrekkMessage lobbyTrekkHandler(@DestinationVariable String lobbyId,
-	                                           @Payload SpillerTrekkMessage message) {
+	public void lobbyTrekkHandler(@DestinationVariable String lobbyId,
+	                              @Payload SpillerTrekkMessage message) {
 		logger.info("Received SpillerTrekkMessage: {}", message);
-		if (lobbyId == null || lobbyId.isBlank()) {
-			logger.warn("LobbyId is missing or blank in message: {}", message);
-			return null;
+		if (ugyldigMelding(lobbyId, message)) {
+			return;
 		}
-		if (erUgyldigMelding(message)) {
-			logger.warn("Invalid message: {}", message);
-			return null;
-		}
-
-		Spiller nesteSpiller = null;
 		try {
-			nesteSpiller = lobbyService.doTrekk(lobbyId, message.getSpillerNavn(), message.getTrekk(),
-			                                       message.getMengde());
+			lobbyService.doTrekk(lobbyId, message.getSpillerNavn(), message.getTrekk(),
+					message.getMengde());
 		} catch (VinnerException e) {
 			throw new RuntimeException(e);
-		}
-		// TODO: gjør noe med returverdi fra metoden over^^ og send retur melding til lobby
-		if (nesteSpiller != null) {
-			return new LobbyTrekkMessage(lobbyId, message.getSpillerNavn(), message.getTrekk(), message.getMengde(), nesteSpiller.getNavn());
-		} else {
-			return null;
 		}
 	}
 
@@ -112,25 +102,15 @@ public class LobbyWebSocketController {
 	 * @return melding som skal broadcastes til alle i lobbyen, eller null hvis ingenting skal oppdateres
 	 */
 	@MessageMapping("/action/{lobbyId}")
-	@SendTo("/lobbystatus/{lobbyId}")
-	public LobbyActionMessage lobbyActionHandler(@DestinationVariable String lobbyId,
-	                                             @Payload SpillerActionMessage message) {
+	public void lobbyActionHandler(@DestinationVariable String lobbyId,
+	                               @Payload SpillerActionMessage message) {
 		logger.info("Received SpillerActionMessage: {}", message);
-		if (lobbyId == null || lobbyId.isBlank()) {
-			logger.warn("LobbyId is missing or blank in message: {}", message);
-			return null;
+		if (ugyldigMelding(lobbyId, message)) {
+			return;
 		}
-		if (erUgyldigMelding(message)) {
-			logger.warn("Invalid message: {}", message);
-			return null;
-		}
-		boolean okAction = lobbyService.doAction(lobbyId, message.getSpillerNavn(), message.getAction());
-		// TODO: gjør noe med returverdi fra metoden over^^ og send retur melding til lobby
-		if (okAction) {
-			return new LobbyActionMessage(lobbyId, lobbyService.getNavneListe(lobbyId), message.getSpillerNavn(),
-			                              message.getAction());
-		} else {
-			return null;
+		if (!lobbyService.doAction(lobbyId, message.getSpillerNavn(), message.getAction())) {
+			sms.sendMelding(message.getSpillerNavn(),
+					String.format("Kunne ikke utføre handling %s i lobby %s", message.getAction(), lobbyId));
 		}
 	}
 }

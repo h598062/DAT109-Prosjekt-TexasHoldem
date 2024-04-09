@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,22 +24,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class LobbyService {
+	private final LobbyMeldingService              lms;
+	private final SpillerMeldingService            sms;
 	/**
 	 * ingen direkte tilgang til lobbies hashmap utenfor denne klassen
 	 */
 	private final ConcurrentHashMap<String, Lobby> lobbies;
-	private TexasHoldemGame game;
-	private final SpillerMeldingService            sms;
 	Logger logger = LoggerFactory.getLogger(LobbyService.class);
+	private TexasHoldemGame game;
 
 	/**
 	 * Oppretter en ny lobby service.<br>
 	 * Bruk @Autowired for å få en instans av denne klassen.
 	 */
 	@Autowired
-	public LobbyService(SpillerMeldingService sms) {
+	public LobbyService(SpillerMeldingService sms, LobbyMeldingService lms) {
 		this.lobbies = new ConcurrentHashMap<>();
 		this.sms     = sms;
+		this.lms     = lms;
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class LobbyService {
 			throw new LobbyAlreadyExistsException(String.format("Lobby with id %s already exists", lobbyId));
 		}
 		logger.info("Creating lobby with id {}", lobbyId);
-		Lobby lobby = new Lobby(lobbyId, lobbyLeder);
+		Lobby lobby = new Lobby(lms, lobbyId, lobbyLeder);
 		lobbies.put(lobbyId, lobby);
 		return lobby;
 	}
@@ -95,30 +96,30 @@ public class LobbyService {
 		switch (trekk) {
 			case CALL:
 				logger.info("Spiller {} har callet i lobbyen {}", spillerNavn, lobbyId);
-                nesteSpiller = game.call(spiller);
-				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
+				nesteSpiller = game.call(spiller);
+				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case CHECK:
 				// muligens slå sammen CALL og CHECK? begge "godtar" nåværende sum på bordet
 				logger.info("Spiller {} har checket i lobbyen {}", spillerNavn, lobbyId);
-                nesteSpiller = game.check(spiller);
-				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
+				nesteSpiller = game.check(spiller);
+				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case FOLD:
 				logger.info("Spiller {} har foldet i lobbyen {}", spillerNavn, lobbyId);
-                nesteSpiller = game.fold(spiller);
-				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
+				nesteSpiller = game.fold(spiller);
+				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case RAISE:
 				logger.info("Spiller {} har raiset med {} i lobbyen {}", spillerNavn, mengde, lobbyId);
-				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
+				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 
 				nesteSpiller = game.raise(spiller, mengde);
 				break;
 			case ALL_IN:
 				logger.info("Spiller {} har gått ALL INN i lobbyen {}", spillerNavn, lobbyId);
-                nesteSpiller = game.allIn(spiller);
-                // send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
+				nesteSpiller = game.allIn(spiller);
+				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 		}
 		return nesteSpiller;
@@ -137,7 +138,7 @@ public class LobbyService {
 		if (spiller == null) {
 			logger.warn("Spiller {} does not exist in lobby {}", spillerNavn, lobby.getLobbyId());
 			sms.sendMelding(spillerNavn,
-			                String.format("Spiller %s finnes ikke i lobby %s", spillerNavn, lobby.getLobbyId()));
+					String.format("Spiller %s finnes ikke i lobby %s", spillerNavn, lobby.getLobbyId()));
 			throw new IllegalArgumentException("Spiller does not exist in lobby");
 		}
 		return spiller;
@@ -201,7 +202,7 @@ public class LobbyService {
 	}
 
 	public boolean doAction(String lobbyId, String spillerNavn, Action action) {
-		Lobby lobby = finnLobby(spillerNavn, lobbyId);
+		Lobby   lobby   = finnLobby(spillerNavn, lobbyId);
 		Spiller spiller = finnSpiller(spillerNavn, lobby);
 		boolean suksess = false;
 		switch (action) {
@@ -210,6 +211,7 @@ public class LobbyService {
 				logger.error("JOIN er ikke ferdig implementert");
 				// TODO: Ferdigstill join implementasjon?
 				lobby.leggTilSpiller(spiller);
+				lms.sendAction(lobbyId, lobby.getSpillernesNavn(), spillerNavn, Action.JOIN);
 				suksess = true;
 				break;
 			case LEAVE:
@@ -246,8 +248,9 @@ public class LobbyService {
 				logger.info("Spiller {} prøver å starte spillet i lobbyen {} ", spillerNavn, lobbyId);
 
 				// her må det opprettes et nytt TexasHoldemGame objekt og lagre det i lobbyen
-				game = new TexasHoldemGame(new ArrayList<>(lobby.getSpillere()));
+				game = new TexasHoldemGame(lms, lobbyId, new ArrayList<>(lobby.getSpillere()));
 				lobby.setGame(game);
+				lms.sendAction(lobbyId, lobby.getSpillernesNavn(), spillerNavn, Action.START);
 				game.startSpill();
 				suksess = true;
 				break;
@@ -259,10 +262,5 @@ public class LobbyService {
 				break;
 		}
 		return suksess;
-	}
-
-	public List<String> getNavneListe(String lobbyId) {
-		Lobby lobby = getLobby(lobbyId);
-		return lobby.getSpillernesNavn();
 	}
 }
