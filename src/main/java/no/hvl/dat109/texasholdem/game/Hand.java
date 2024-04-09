@@ -22,4 +22,8 @@ public class Hand {
     public void clear() {
         hand.clear();
     }
+
+    public Set<Kort> getHand() {
+        return hand;
+    }
 }

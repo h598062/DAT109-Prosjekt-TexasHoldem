@@ -14,8 +14,6 @@ public class Spiller {
 	 */
     private String navn;
     private Status status;
-    private Trekk trekk;
-
 	public Spiller(String navn) {
 		this.navn = navn;
 	}
@@ -33,7 +31,7 @@ public class Spiller {
 
     }
 
-    private void emptyHand() {
+    public void emptyHand() {
         hand.clear();
     }
 
@@ -53,13 +51,13 @@ public class Spiller {
         this.status = status;
     }
 
-    public Trekk getTrekk() {
-        return trekk;
-    }
+	public Hand getHand() {
+		return hand;
+	}
 
-    public void setTrekk(Trekk trekk) {
-        this.trekk = trekk;
-    }
+	public void setHand(Hand hand) {
+		this.hand = hand;
+	}
 
 	public String getNavn() {
 		return navn;
