@@ -24,6 +24,7 @@
             src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
             crossorigin="anonymous"
     ></script>
+    <link href="resources/static/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Lobby ${lobbyId}</h1>
@@ -49,6 +50,15 @@
     <button id="end">End</button>
 </fieldset>
 
+<fieldset>
+    <div class="div1">
+
+    </div>
+    <div class="div2">
+
+    </div>
+</fieldset>
+
 <script type="module">
     import {Client} from '@stomp/stompjs';
 
@@ -56,8 +66,11 @@
     const spillerNavn = '${spillerNavn}';
     console.log('Lobby: ' + lobbyId);
     console.log('Spiller: ' + spillerNavn);
-
-    const client = new Client({brokerURL: 'ws://localhost:8080/lobby-ws'});
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    console.log('Protocol: ' + protocol);
+    const host = window.location.host;
+    console.log('Host: ' + host);
+    const client = new Client({brokerURL: protocol + "//" + host + "/lobby-ws"});
     client.onConnect = (frame) => {
         console.log('Connected: ' + frame);
         client.subscribe('/lobbystatus/' + lobbyId, handleMessage);

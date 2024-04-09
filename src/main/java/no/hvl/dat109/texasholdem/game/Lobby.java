@@ -1,5 +1,6 @@
 package no.hvl.dat109.texasholdem.game;
 
+import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,30 +10,29 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Lobby {
-	Logger logger = LoggerFactory.getLogger(Lobby.class);
-
-	private final String lobbyId;
+	private final String                             lobbyId;
 	private final ConcurrentHashMap<String, Spiller> spillere;
-	private final Spiller lobbyLeder;
-	private Kortstokk kortstokk;
+	private final Spiller                            lobbyLeder;
+	private final LobbyMeldingService                lms;
+	Logger logger = LoggerFactory.getLogger(Lobby.class);
+	private TexasHoldemGame game;
 
-	public Lobby(String lobbyId, String lobbyLederNavn) {
-		this.lobbyId = lobbyId;
-		this.spillere = new ConcurrentHashMap<>();
-		kortstokk = new Kortstokk();
+	public Lobby(LobbyMeldingService lms, String lobbyId, String lobbyLederNavn) {
+		this.lms        = lms;
+		this.lobbyId    = lobbyId;
+		this.spillere   = new ConcurrentHashMap<>();
 		this.lobbyLeder = new Spiller(lobbyLederNavn);
 		spillere.put(lobbyLederNavn, this.lobbyLeder);
 	}
 
+
 	/**
-	 * Dealer kort til hver spiller som er i listen.
+	 * Metode skal kalles når spillet i lobbyen skal startes.
 	 */
-	public void dealCards() {
-		spillere.forEach((n,s) -> {
-			// n blir string navn til spilleren (key) i map, brukes ikke her
-			s.drawCard(kortstokk);
-			s.drawCard(kortstokk);
-		});
+	public Spiller start() {
+		// TODO: Ferdigstill start-sekvens
+		game = new TexasHoldemGame(lms, lobbyId, (List<Spiller>) spillere.values());
+		return game.startSpill();
 	}
 
 	public String getLobbyId() {
@@ -72,11 +72,24 @@ public class Lobby {
 
 	/**
 	 * Returnerer en liste med navn på alle spillere i denne lobbyen
+	 *
 	 * @return liste med navn på alle spillere i denne lobbyen
 	 */
 	public synchronized List<String> getSpillernesNavn() {
 		ArrayList<String> list = Collections.list(spillere.keys());
 		logger.info("spillere {}", list);
 		return list;
+	}
+
+	public List<Spiller> getSpillere() {
+		return new ArrayList<>(spillere.values());
+	}
+
+	public TexasHoldemGame getGame() {
+		return game;
+	}
+
+	public void setGame(TexasHoldemGame game) {
+		this.game = game;
 	}
 }
