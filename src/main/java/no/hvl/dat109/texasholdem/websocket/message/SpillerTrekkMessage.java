@@ -11,12 +11,6 @@ public class SpillerTrekkMessage extends SpillerMessage {
 		this.trekk = trekk;
 	}
 
-	public SpillerTrekkMessage(String spiller, Trekk trekk) {
-		super(spiller);
-		this.mengde = 0;
-		this.trekk = trekk;
-	}
-
 	/**
 	 * Tom konstruktør for serialisering<br>
 	 * Lager du meldingen selv, bruk konstruktøren med parametre.

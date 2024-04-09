@@ -1,5 +1,6 @@
 package no.hvl.dat109.texasholdem.game;
 
+import no.hvl.dat109.texasholdem.enums.Trekk;
 import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import no.hvl.dat109.texasholdem.websocket.message.GameStatusMessage;
 
@@ -72,6 +73,8 @@ public class TexasHoldemGame {
 				ferdigMedRunde); // alle de andre må nå calle den nye summen, legg de til i trekk listen på nytt
 		ferdigMedRunde = List.of(spiller); // lag en ny ferdig med runde liste og legg til denne spilleren
 
+		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.RAISE, mengde);
+
 		return velgNesteSpiller();
 	}
 
@@ -96,18 +99,23 @@ public class TexasHoldemGame {
 		ikkeGjortSineTrekk.remove(spiller);
 		ferdigMedRunde.add(spiller);
 
+		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CALL, 0);
+
 		return velgNesteSpiller();
 	}
 
 	public Spiller check(Spiller spiller) throws VinnerException {
 		ikkeGjortSineTrekk.remove(spiller);
 		ferdigMedRunde.add(spiller);
+		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CHECK, 0);
 		return velgNesteSpiller();
 	}
 
 	public Spiller fold(Spiller spiller) throws VinnerException {
 		spiller.emptyHand();
 		ikkeGjortSineTrekk.remove(spiller);
+
+		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.FOLD, 0);
 
 		return velgNesteSpiller();
 	}
@@ -118,6 +126,8 @@ public class TexasHoldemGame {
 
 		ikkeGjortSineTrekk.remove(spiller);
 		allInSpillere.add(spiller);
+
+		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.ALL_IN, 0);
 
 		return velgNesteSpiller();
 	}
@@ -132,6 +142,9 @@ public class TexasHoldemGame {
 			nesteRunde();
 		}
 		spillerSinTur = ikkeGjortSineTrekk.get(0);
+		lms.sendSpillStatus(lobbyId,
+				new GameStatusMessage(lobbyId, ferdigMedRunde, ikkeGjortSineTrekk, allInSpillere, new ArrayList<>(),
+						spillerSinTur, runde));
 		return spillerSinTur;
 	}
 
@@ -162,6 +175,7 @@ public class TexasHoldemGame {
 				Spiller vinner = sjekkVinner();
 				throw new VinnerException(vinner);
 		}
+		lms.sendBordKort(lobbyId, bordKort);
 	}
 
 	private Spiller sjekkVinner() {

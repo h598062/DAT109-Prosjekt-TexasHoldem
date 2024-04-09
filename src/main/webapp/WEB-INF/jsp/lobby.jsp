@@ -35,7 +35,9 @@
 <fieldset>
     <legend>Trekk</legend>
     <button id="call">Call</button>
+    <button id="check">Check</button>
     <button id="fold">Fold</button>
+    <button id="allin">All In</button>
     <button id="raise">Raise</button>
     <label for="raiseNum">Number:</label>
     <input type="number" id="raiseNum" name="numberInput" value="0">
@@ -88,7 +90,7 @@
             spillereListe.innerHTML = '';
             for (let spiller of spillere) {
                 const li = document.createElement('li');
-                li.textContent = spiller;
+                li.textContent = spiller.navn === undefined ? spiller : spiller.navn;
                 spillereListe.appendChild(li);
             }
         }
@@ -111,21 +113,21 @@
 
     function raise() {
         const number = document.getElementById('raiseNum').value;
-        let body = {"trekk": "RAISE", "spillerNavn": spillerNavn, "verdi": number};
+        let body = {"trekk": "RAISE", "spillerNavn": spillerNavn, "mengde": parseInt(number)};
         console.log('Raising with ' + number);
         console.log(body);
         client.publish({destination: '/lobby/trekk/' + lobbyId, body: JSON.stringify(body)});
     }
 
     function call() {
-        let body = {"trekk": "CALL", "spillerNavn": spillerNavn, "verdi": 0};
+        let body = {"trekk": "CALL", "spillerNavn": spillerNavn, "mengde": 0};
         console.log('Calling');
         console.log(body);
         client.publish({destination: '/lobby/trekk/' + lobbyId, body: JSON.stringify(body)});
     }
 
     function fold() {
-        let body = {"trekk": "FOLD", "spillerNavn": spillerNavn, "verdi": 0};
+        let body = {"trekk": "FOLD", "spillerNavn": spillerNavn, "mengde": 0};
         console.log('Folding');
         console.log(body);
         client.publish({destination: '/lobby/trekk/' + lobbyId, body: JSON.stringify(body)});
@@ -138,9 +140,25 @@
         client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
     }
 
+    function check() {
+        let body = {"trekk": "CHECK", "spillerNavn": spillerNavn, "mengde": 0};
+        console.log('Checking');
+        console.log(body);
+        client.publish({destination: '/lobby/trekk/' + lobbyId, body: JSON.stringify(body)});
+    }
+
+    function allin() {
+        let body = {"trekk": "ALL_IN", "spillerNavn": spillerNavn, "mengde": 0};
+        console.log('All in');
+        console.log(body);
+        client.publish({destination: '/lobby/trekk/' + lobbyId, body: JSON.stringify(body)});
+    }
+
     document.getElementById('raise').addEventListener('click', raise);
     document.getElementById('call').addEventListener('click', call);
     document.getElementById('fold').addEventListener('click', fold);
+    document.getElementById('check').addEventListener('click', check);
+    document.getElementById('allin').addEventListener('click', allin);
 
     document.getElementById('start').addEventListener('click', start);
 </script>

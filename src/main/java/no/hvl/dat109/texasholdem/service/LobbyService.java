@@ -113,7 +113,6 @@ public class LobbyService {
 			case RAISE:
 				logger.info("Spiller {} har raiset med {} i lobbyen {}", spillerNavn, mengde, lobbyId);
 				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
-
 				nesteSpiller = game.raise(spiller, mengde);
 				break;
 			case ALL_IN:

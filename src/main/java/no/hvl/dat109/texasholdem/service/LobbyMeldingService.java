@@ -2,11 +2,9 @@ package no.hvl.dat109.texasholdem.service;
 
 import no.hvl.dat109.texasholdem.enums.Action;
 import no.hvl.dat109.texasholdem.enums.Trekk;
+import no.hvl.dat109.texasholdem.game.Kort;
 import no.hvl.dat109.texasholdem.game.Spiller;
-import no.hvl.dat109.texasholdem.websocket.message.GameStatusMessage;
-import no.hvl.dat109.texasholdem.websocket.message.LobbyActionMessage;
-import no.hvl.dat109.texasholdem.websocket.message.LobbyTrekkMessage;
-import no.hvl.dat109.texasholdem.websocket.message.VinnerMessage;
+import no.hvl.dat109.texasholdem.websocket.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +39,11 @@ public class LobbyMeldingService {
 	public void sendSpillStatus(String lobbyId, GameStatusMessage message) {
 		logger.info("Sender spillstatus til lobby {}", lobbyId);
 		smt.convertAndSend("/lobbystatus/" + lobbyId, message);
+	}
+
+	public void sendBordKort(String lobbyId, List<Kort> bordKort) {
+		logger.info("Sender bordkort til lobby {}", lobbyId);
+		smt.convertAndSend("/lobbystatus/" + lobbyId, new BordKortMessage(lobbyId, bordKort));
 	}
 
 	/**
