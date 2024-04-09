@@ -157,6 +157,7 @@ public class TexasHoldemGame {
     private Spiller sjekkVinner() {
         Spiller vinner = null;
         Hand hoyesteHand = null;
+        ferdigMedRunde.addAll(allInSpillere);
         for (Spiller spiller : ferdigMedRunde) {
             Hand hand = spiller.getHand();
             if (hoyesteHand == null || EvaluateCards.compareHand(hoyesteHand, hand) < 0) {
