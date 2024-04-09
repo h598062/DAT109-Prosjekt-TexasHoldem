@@ -1,7 +1,5 @@
 package no.hvl.dat109.texasholdem.controller;
 
-import no.hvl.dat109.texasholdem.enums.Action;
-import no.hvl.dat109.texasholdem.game.Lobby;
 import no.hvl.dat109.texasholdem.game.Spiller;
 import no.hvl.dat109.texasholdem.game.VinnerException;
 import no.hvl.dat109.texasholdem.service.SpillerMeldingService;
@@ -31,19 +29,19 @@ public class LobbyWebSocketController {
 	private static final Logger logger = LoggerFactory.getLogger(LobbyWebSocketController.class);
 
 	private final LobbyService lobbyService;
-	private final SpillerMeldingService bms;
+	private final SpillerMeldingService sms;
 
 	/**
 	 * Konstruktør for Controlleren<br>
 	 * Autowirer lobbyService og messagingTemplate i konstruktøren som er den gode måten å gjøre det på
 	 *
 	 * @param lobbyService service for lobbyen
-	 * @param bms          service for å sende meldinger til en spiller
+	 * @param sms          service for å sende meldinger til en spiller
 	 */
 	@Autowired
-	public LobbyWebSocketController(LobbyService lobbyService, SpillerMeldingService bms) {
+	public LobbyWebSocketController(LobbyService lobbyService, SpillerMeldingService sms) {
 		this.lobbyService = lobbyService;
-		this.bms = bms;
+		this.sms = sms;
 	}
 
 	/**

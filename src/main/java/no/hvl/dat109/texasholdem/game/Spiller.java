@@ -16,6 +16,7 @@ public class Spiller {
     private Status status;
 	public Spiller(String navn) {
 		this.navn = navn;
+		this.hand = new Hand();
 	}
 
     /**

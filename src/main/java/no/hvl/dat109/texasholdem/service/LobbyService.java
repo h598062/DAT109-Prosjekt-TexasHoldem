@@ -244,11 +244,12 @@ public class LobbyService {
 				break;
 			case START:
 				logger.info("Spiller {} prøver å starte spillet i lobbyen {} ", spillerNavn, lobbyId);
-				// TODO: Gjør ferdig start implementasjon
 
 				// her må det opprettes et nytt TexasHoldemGame objekt og lagre det i lobbyen
 				game = new TexasHoldemGame(new ArrayList<>(lobby.getSpillere()));
 				lobby.setGame(game);
+				game.startSpill();
+				suksess = true;
 				break;
 			case END:
 				logger.info("Spiller {} prøver å stoppe spillet i lobbyen {} ", spillerNavn, lobbyId);

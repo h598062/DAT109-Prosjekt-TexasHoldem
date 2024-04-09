@@ -24,6 +24,7 @@
             src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
             crossorigin="anonymous"
     ></script>
+    <link href="resources/static/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Lobby ${lobbyId}</h1>
@@ -47,6 +48,15 @@
     <button id="leave">Leave</button>
     <button id="start">Start</button>
     <button id="end">End</button>
+</fieldset>
+
+<fieldset>
+    <div class="div1">
+
+    </div>
+    <div class="div2">
+
+    </div>
 </fieldset>
 
 <script type="module">

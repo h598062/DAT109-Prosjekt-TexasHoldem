@@ -1,0 +1,5 @@
+.div1, .div2 {
+    width: 50%;
+    padding: 10px;
+    box-sizing: border-box;
+}
