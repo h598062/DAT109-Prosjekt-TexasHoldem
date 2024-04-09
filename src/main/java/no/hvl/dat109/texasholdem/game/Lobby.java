@@ -78,6 +78,10 @@ public class Lobby {
 		return list;
 	}
 
+	public List<Spiller> getSpillere() {
+		return new ArrayList<>(spillere.values());
+	}
+
 	public TexasHoldemGame getGame() {
 		return game;
 	}

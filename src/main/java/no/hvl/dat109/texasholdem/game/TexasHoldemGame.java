@@ -31,6 +31,10 @@ public class TexasHoldemGame {
 
         kortstokk = new Kortstokk();
         this.runde = Round.PREFLOP;
+
+        this.ferdigMedRunde = new ArrayList<>();
+        this.allInSpillere = new ArrayList<>();
+        this.bordKort = new ArrayList<>();
     }
 
     /**
@@ -63,6 +67,13 @@ public class TexasHoldemGame {
         return velgNesteSpiller();
     }
 
+    /**
+     * Metode for å calle
+     *
+     * @param spiller
+     * @return spiller
+     * @throws VinnerException
+     */
     public Spiller call(Spiller spiller) throws VinnerException {
         // Trenger kanskje enda en if sjekk for å sjekke all in dersom call er all in
         if (spiller.getChips() < raiseTarget) {
@@ -144,18 +155,17 @@ public class TexasHoldemGame {
     }
 
     private Spiller sjekkVinner() {
-       
+        Spiller vinner = null;
+        Hand hoyesteHand = null;
+        for (Spiller spiller : ferdigMedRunde) {
+            Hand hand = spiller.getHand();
+            if (hoyesteHand == null || EvaluateCards.compareHand(hoyesteHand, hand) < 0) {
+                hoyesteHand = hand;
+                vinner = spiller;
+            }
+        }
+        return vinner;
     }
-
-    private int compareHand(Hand hand1, Hand hand2) {
-
-    }
-
-    private int calculateHandScore(Hand hand) {
-
-    }
-
-
 
     private Spiller sjekkEnesteIgjen() {
         if (ikkeGjortSineTrekk.isEmpty() && (ferdigMedRunde.size() == 1 && allInSpillere.isEmpty()

@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +29,7 @@ public class LobbyService {
 	 * ingen direkte tilgang til lobbies hashmap utenfor denne klassen
 	 */
 	private final ConcurrentHashMap<String, Lobby> lobbies;
+	private TexasHoldemGame game;
 	private final SpillerMeldingService            sms;
 	Logger logger = LoggerFactory.getLogger(LobbyService.class);
 
@@ -85,43 +88,37 @@ public class LobbyService {
 	public Spiller doTrekk(String lobbyId, String spillerNavn, Trekk trekk, int mengde) throws VinnerException {
 
 		Lobby lobby = finnLobby(spillerNavn, lobbyId);
-		TexasHoldemGame game = lobby.getGame();
+		game = lobby.getGame();
 		Spiller spiller = finnSpiller(spillerNavn, lobby);
 
 		Spiller nesteSpiller = null;
 		switch (trekk) {
 			case CALL:
 				logger.info("Spiller {} har callet i lobbyen {}", spillerNavn, lobbyId);
-				logger.error("CALL er ikke implementert");
-				// TODO: Implementer call
+                nesteSpiller = game.call(spiller);
 				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case CHECK:
 				// muligens slå sammen CALL og CHECK? begge "godtar" nåværende sum på bordet
 				logger.info("Spiller {} har checket i lobbyen {}", spillerNavn, lobbyId);
-				logger.error("CHECK er ikke implementert");
-				// TODO: Implementer check
+                nesteSpiller = game.check(spiller);
 				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case FOLD:
 				logger.info("Spiller {} har foldet i lobbyen {}", spillerNavn, lobbyId);
-				logger.error("FOLD er ikke implementert");
-				// TODO: Implementer fold
+                nesteSpiller = game.fold(spiller);
 				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case RAISE:
 				logger.info("Spiller {} har raiset med {} i lobbyen {}", spillerNavn, mengde, lobbyId);
-				logger.error("RAISE er ikke implementert");
-				// TODO: Ferdigstill raise implementasjon
 				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 
 				nesteSpiller = game.raise(spiller, mengde);
 				break;
 			case ALL_IN:
 				logger.info("Spiller {} har gått ALL INN i lobbyen {}", spillerNavn, lobbyId);
-				logger.error("ALL INN er ikke implementert");
-				// TODO Implementer all in
-				// send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
+                nesteSpiller = game.allIn(spiller);
+                // send feilmelding med bms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 		}
 		return nesteSpiller;
@@ -247,10 +244,11 @@ public class LobbyService {
 				break;
 			case START:
 				logger.info("Spiller {} prøver å starte spillet i lobbyen {} ", spillerNavn, lobbyId);
-				logger.error("START er ikke implementert");
 				// TODO: Gjør ferdig start implementasjon
 
 				// her må det opprettes et nytt TexasHoldemGame objekt og lagre det i lobbyen
+				game = new TexasHoldemGame(new ArrayList<>(lobby.getSpillere()));
+				lobby.setGame(game);
 				break;
 			case END:
 				logger.info("Spiller {} prøver å stoppe spillet i lobbyen {} ", spillerNavn, lobbyId);
