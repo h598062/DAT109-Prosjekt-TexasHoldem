@@ -147,6 +147,8 @@ public class TexasHoldemGame {
 		spiller.setChips(0);
 
 		ikkeGjortSineTrekk.remove(spiller);
+		ikkeGjortSineTrekk.addAll(
+				ferdigMedRunde); // alle de andre må nå godta all in
 		allInSpillere.add(spiller);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.ALL_IN, 0);
