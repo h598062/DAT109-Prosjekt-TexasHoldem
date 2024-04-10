@@ -88,6 +88,9 @@ public class LobbyService {
 	 */
 	public Spiller doTrekk(String lobbyId, String spillerNavn, Trekk trekk, int mengde) throws VinnerException {
 
+		// Returnererer null for å ikke få feilmelding når noen caller før game er startet
+		if (game == null) return null;
+
 		Lobby lobby = finnLobby(spillerNavn, lobbyId);
 		game = lobby.getGame();
 		Spiller spiller = finnSpiller(spillerNavn, lobby);

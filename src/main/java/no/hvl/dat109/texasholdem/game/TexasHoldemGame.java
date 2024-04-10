@@ -88,6 +88,8 @@ public class TexasHoldemGame {
 	 * @throws VinnerException
 	 */
 	public Spiller call(Spiller spiller) throws VinnerException {
+		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+
 		// Trenger kanskje enda en if sjekk for å sjekke all in dersom call er all in
 		if (spiller.getChips() < raiseTarget) {
 			return allIn(spiller);
@@ -105,6 +107,8 @@ public class TexasHoldemGame {
 	}
 
 	public Spiller check(Spiller spiller) throws VinnerException {
+		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+
 		ikkeGjortSineTrekk.remove(spiller);
 		ferdigMedRunde.add(spiller);
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CHECK, 0);
@@ -112,6 +116,8 @@ public class TexasHoldemGame {
 	}
 
 	public Spiller fold(Spiller spiller) throws VinnerException {
+		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+
 		spiller.emptyHand();
 		ikkeGjortSineTrekk.remove(spiller);
 
@@ -121,6 +127,8 @@ public class TexasHoldemGame {
 	}
 
 	public Spiller allIn(Spiller spiller) throws VinnerException {
+		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+
 		pott += spiller.getChips();
 		spiller.setChips(0);
 
