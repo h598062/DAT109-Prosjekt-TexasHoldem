@@ -88,4 +88,12 @@ public class Spiller {
 	public int hashCode() {
 		return navn != null ? navn.hashCode() : 0;
 	}
+
+	@Override
+	public String toString() {
+		return "Spiller{" +
+		       "navn='" + navn + '\'' +
+		       ", chips=" + chips +
+		       '}';
+	}
 }
