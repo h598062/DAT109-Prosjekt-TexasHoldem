@@ -97,7 +97,7 @@
         .player-card {
             width: 3em;
             height: 4em;
-            background: crimson;
+            background: dodgerblue;
             margin: 0.1em;
         }
 
@@ -269,18 +269,6 @@
     <button id="end">End</button>
 </fieldset>
 
-<fieldset>
-    <div class="div1">
-        <p>Kortene dine:</p>
-        <ul>
-
-        </ul>
-    </div>
-    <div class="div2">
-
-    </div>
-</fieldset>
-
 <script type="module">
     import {Client} from '@stomp/stompjs';
 
@@ -308,14 +296,15 @@
 
         console.log('Player\'s hand:', hand);
 
-        const handUl = document.querySelector('.div1 ul');
+        const playerCardContainer = document.querySelector('#cards');
 
-        handUl.innerHTML = '';
+        playerCardContainer.innerHTML = '';
 
         hand.forEach(card => {
-            const cardItem = document.createElement('li');
-            cardItem.textContent = card.korttype + " " + card.verdi;
-            handUl.appendChild(cardItem);
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'player-card card flipped';
+            cardDiv.textContent = card.korttype + " " + card.verdi;
+            playerCardContainer.appendChild(cardDiv);
         });
     }
 
