@@ -172,7 +172,7 @@
     <div id="left-player-bar" class="player-bar">
         <div class="other-player">
             <div class="other-cardContainer">
-                <div class="other-card card card"></div>
+                <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
         </div>
@@ -296,16 +296,11 @@
 
         console.log('Player\'s hand:', hand);
 
-        const playerCardContainer = document.querySelector('#cards');
+        const playerCardContainer = document.querySelectorAll('#cards > div');
 
-        playerCardContainer.innerHTML = '';
-
-        hand.forEach(card => {
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'player-card card flipped';
-            cardDiv.textContent = card.korttype + " " + card.verdi;
-            playerCardContainer.appendChild(cardDiv);
-        });
+        for (let i = 0; i < playerCardContainer.length; i++) {
+            playerCardContainer[i].textContent = hand[i].korttype + " " + hand[i].verdi;
+        }
     }
 
     function handleMessage(message) {
