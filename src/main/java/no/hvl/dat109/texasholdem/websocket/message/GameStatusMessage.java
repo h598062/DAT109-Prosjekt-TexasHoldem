@@ -23,17 +23,19 @@ public class GameStatusMessage extends LobbyMessage {
 	 * @param spillerSinTur        spilleren som skal gjøre sitt trekk
 	 * @param runde                hvilken runde vi er på
 	 */
-	public GameStatusMessage(String lobbyId, List<Spiller> ferdigeSpillere, List<Spiller> ventendeSpillere,
-	                         List<Spiller> allInSpillere, List<Spiller> spillereSomHarFoldet, Spiller spillerSinTur,
+	public GameStatusMessage(String lobbyId, List<Spiller> spillere, Spiller spillerSinTur,
 	                         TexasHoldemGame.Round runde) {
 		super(lobbyId);
 		this.spillere      = new ArrayList<>();
 		this.spillerSinTur = spillerSinTur.getNavn();
 		this.runde         = runde;
-		ferdigeSpillere.forEach(s -> spillere.add(new SpillerInfo(s.getNavn(), s.getChips(), Status.DONE)));
-		ventendeSpillere.forEach(s -> spillere.add(new SpillerInfo(s.getNavn(), s.getChips(), Status.WAITING)));
-		allInSpillere.forEach(s -> spillere.add(new SpillerInfo(s.getNavn(), s.getChips(), Status.ALLIN)));
-		spillereSomHarFoldet.forEach(s -> spillere.add(new SpillerInfo(s.getNavn(), s.getChips(), Status.FOLD)));
+		spillere.forEach(s -> {
+			SpillerInfo si = new SpillerInfo();
+			si.setNavn(s.getNavn());
+			si.setChips(s.getChips());
+			si.setStatus(s.getStatus());
+			this.spillere.add(si);
+		});
 	}
 
 	public GameStatusMessage() {

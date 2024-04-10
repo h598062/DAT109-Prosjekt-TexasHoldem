@@ -1,5 +1,6 @@
 package no.hvl.dat109.texasholdem.game;
 
+import no.hvl.dat109.texasholdem.enums.Status;
 import no.hvl.dat109.texasholdem.enums.Trekk;
 import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import no.hvl.dat109.texasholdem.websocket.message.GameStatusMessage;
@@ -10,16 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TexasHoldemGame {
-	private static final Logger logger = LoggerFactory.getLogger(TexasHoldemGame.class);
-	private final LobbyMeldingService lms;
-	private final String              lobbyId;
+	private static final Logger              logger = LoggerFactory.getLogger(TexasHoldemGame.class);
+	private final        LobbyMeldingService lms;
+	private final        String              lobbyId;
 
 	private Spiller       spillerSinTur;
 	private int           pott;
 	private int           raiseTarget;
-	private List<Spiller> ikkeGjortSineTrekk;
-	private List<Spiller> ferdigMedRunde;
-	private List<Spiller> allInSpillere;
+	private List<Spiller> spillere;
 
 	private Kortstokk kortstokk;
 
@@ -30,28 +29,25 @@ public class TexasHoldemGame {
 	private boolean erStartet;
 
 	public TexasHoldemGame(LobbyMeldingService lms, String lobbyId, List<Spiller> spillere) {
-		this.lms                = lms;
-		this.lobbyId            = lobbyId;
-		this.ikkeGjortSineTrekk = new ArrayList<>();
-		ikkeGjortSineTrekk.addAll(spillere);
+		this.lms      = lms;
+		this.lobbyId  = lobbyId;
+		this.spillere = new ArrayList<>();
+		this.spillere.addAll(spillere);
 
 		erStartet = false;
 
 		raiseTarget = 5;
 
-		kortstokk  = new Kortstokk();
-		this.runde = Round.PREFLOP;
-
-		this.ferdigMedRunde = new ArrayList<>();
-		this.allInSpillere  = new ArrayList<>();
-		this.bordKort       = new ArrayList<>();
+		kortstokk     = new Kortstokk();
+		this.runde    = Round.PREFLOP;
+		this.bordKort = new ArrayList<>();
 	}
 
 	/**
 	 * Dealer kort til hver spiller som er i listen.
 	 */
 	public void dealCards() {
-		ikkeGjortSineTrekk.forEach(s -> {
+		spillere.forEach(s -> {
 			s.drawCard(kortstokk);
 			s.drawCard(kortstokk);
 		});
@@ -76,11 +72,12 @@ public class TexasHoldemGame {
 		spiller.setChips(spiller.getChips() - mengde); // ta chips fra spiller
 		pott += mengde; // legg til mengden i pott
 		raiseTarget = mengde; // lagre hva som er den nye "målet" å calle til
-		ikkeGjortSineTrekk.remove(spiller); // fjern denne spilleren fra ikkje gjort et trekk listen
-		ikkeGjortSineTrekk.addAll(
-				ferdigMedRunde); // alle de andre må nå calle den nye summen, legg de til i trekk listen på nytt
-		ferdigMedRunde = new ArrayList<>(); // lag en ny ferdig med runde liste og legg til denne spilleren
-		ferdigMedRunde.add(spiller);
+		spillere.forEach(s -> {
+			if (!s.equals(spiller)) {
+				s.setStatus(Status.WAITING);
+			}
+		});
+		spiller.setStatus(Status.DONE);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.RAISE, mengde);
 
@@ -97,7 +94,9 @@ public class TexasHoldemGame {
 	 * @throws VinnerException
 	 */
 	public Spiller call(Spiller spiller) throws VinnerException {
-		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+		if (!erStartet || !spillerSinTur.equals(spiller)) {
+			return null;
+		}
 
 		// Trenger kanskje enda en if sjekk for å sjekke all in dersom call er all in
 		if (spiller.getChips() < raiseTarget) {
@@ -107,10 +106,8 @@ public class TexasHoldemGame {
 		spiller.setChips(spiller.getChips() - raiseTarget);
 		pott += raiseTarget;
 
-		ikkeGjortSineTrekk.remove(spiller);
-		logger.info("Ikke gjort sine trekk{}",ikkeGjortSineTrekk);
-		ferdigMedRunde.add(spiller);
-		logger.info("Ferdig med runde {}",ferdigMedRunde);
+		spiller.setStatus(Status.DONE);
+		logger.info("Spillere: {}", spillere);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CALL, 0);
 
@@ -118,22 +115,25 @@ public class TexasHoldemGame {
 	}
 
 	public Spiller check(Spiller spiller) throws VinnerException {
-		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+		if (!erStartet || !spillerSinTur.equals(spiller)) {
+			return null;
+		}
 
-		ikkeGjortSineTrekk.remove(spiller);
-		logger.info("Ikke gjort sine trekk{}",ikkeGjortSineTrekk);
-		ferdigMedRunde.add(spiller);
-		logger.info("Ferdig med runde {}",ferdigMedRunde);
+		spiller.setStatus(Status.DONE);
+		logger.info("Spillere: {}", spillere);
+
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CHECK, 0);
 		return velgNesteSpiller();
 	}
 
 	public Spiller fold(Spiller spiller) throws VinnerException {
-		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+		if (!erStartet || !spillerSinTur.equals(spiller)) {
+			return null;
+		}
 
 		spiller.emptyHand();
-		ikkeGjortSineTrekk.remove(spiller);
-		logger.info("Ikke gjort sine trekk {}", ikkeGjortSineTrekk);
+		spiller.setStatus(Status.FOLD);
+		logger.info("Spillere: {}", spillere);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.FOLD, 0);
 
@@ -141,15 +141,20 @@ public class TexasHoldemGame {
 	}
 
 	public Spiller allIn(Spiller spiller) throws VinnerException {
-		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
+		if (!erStartet || !spillerSinTur.equals(spiller)) {
+			return null;
+		}
 
 		pott += spiller.getChips();
 		spiller.setChips(0);
 
-		ikkeGjortSineTrekk.remove(spiller);
-		ikkeGjortSineTrekk.addAll(
-				ferdigMedRunde); // alle de andre må nå godta all in
-		allInSpillere.add(spiller);
+		spillere.forEach(s -> {
+			if (!s.equals(spiller)) {
+				s.setStatus(Status.WAITING);
+			}
+		});
+
+		spiller.setStatus(Status.ALLIN);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.ALL_IN, 0);
 
@@ -165,9 +170,10 @@ public class TexasHoldemGame {
 		if (sjekkOmRundeErFerdig()) {
 			nesteRunde();
 		}
-		spillerSinTur = ikkeGjortSineTrekk.get(0);
+		spillerSinTur = spillere.stream().filter(s -> s.getStatus().equals(Status.WAITING))
+		                        .findFirst().orElse(null);
 		lms.sendSpillStatus(lobbyId,
-				new GameStatusMessage(lobbyId, ferdigMedRunde, ikkeGjortSineTrekk, allInSpillere, new ArrayList<>(),
+				new GameStatusMessage(lobbyId, spillere,
 						spillerSinTur, runde));
 		return spillerSinTur;
 	}
@@ -181,20 +187,20 @@ public class TexasHoldemGame {
 				addCardToTable();
 				addCardToTable();
 				addCardToTable();
-				ikkeGjortSineTrekk = ferdigMedRunde;
-				ferdigMedRunde = new ArrayList<>();
+				spillere.stream().filter(s -> s.getStatus().equals(Status.DONE))
+				        .forEach(s -> s.setStatus(Status.WAITING));
 				break;
 			case FLOP:
 				runde = Round.TURN;
 				addCardToTable();
-				ikkeGjortSineTrekk = ferdigMedRunde;
-				ferdigMedRunde = new ArrayList<>();
+				spillere.stream().filter(s -> s.getStatus().equals(Status.DONE))
+				        .forEach(s -> s.setStatus(Status.WAITING));
 				break;
 			case TURN:
 				runde = Round.RIVER;
 				addCardToTable();
-				ikkeGjortSineTrekk = ferdigMedRunde;
-				ferdigMedRunde = new ArrayList<>();
+				spillere.stream().filter(s -> s.getStatus().equals(Status.DONE))
+				        .forEach(s -> s.setStatus(Status.WAITING));
 				break;
 			case RIVER:
 				Spiller vinner = sjekkVinner();
@@ -206,7 +212,10 @@ public class TexasHoldemGame {
 	private Spiller sjekkVinner() {
 		Spiller vinner      = null;
 		Hand    hoyesteHand = null;
-		for (Spiller spiller : ferdigMedRunde) {
+		for (Spiller spiller : spillere) {
+			if (spiller.getStatus().equals(Status.FOLD)) {
+				continue;
+			}
 			Hand hand = spiller.getHand();
 			if (hoyesteHand == null || EvaluateCards.compareHand(hoyesteHand, hand) < 0) {
 				hoyesteHand = hand;
@@ -217,11 +226,17 @@ public class TexasHoldemGame {
 	}
 
 	private Spiller sjekkEnesteIgjen() {
-		if (ikkeGjortSineTrekk.isEmpty() && (ferdigMedRunde.size() == 1 && allInSpillere.isEmpty()
-		                                     || ferdigMedRunde.isEmpty() && allInSpillere.size() == 1)) {
-			return ferdigMedRunde.get(0);
+		Spiller vinner = null;
+		for (Spiller spiller : spillere) {
+			if (spiller.getStatus().equals(Status.FOLD)) {
+				continue;
+			}
+			if (vinner != null) {
+				return null;
+			}
+			vinner = spiller;
 		}
-		return null;
+		return vinner;
 	}
 
 	public Spiller getSpillerSinTur() {
@@ -233,7 +248,13 @@ public class TexasHoldemGame {
 	}
 
 	public boolean sjekkOmRundeErFerdig() {
-		return ikkeGjortSineTrekk.isEmpty();
+		int antallDone = 0;
+		for (Spiller spiller : spillere) {
+			if (!spiller.getStatus().equals(Status.WAITING)) {
+				antallDone++;
+			}
+		}
+		return antallDone == spillere.size();
 	}
 
 	public Spiller startSpill() {
@@ -241,12 +262,12 @@ public class TexasHoldemGame {
 			return null;
 		}
 		erStartet     = true;
-		spillerSinTur = ikkeGjortSineTrekk.get(0); // velg den første i listen til å begynne
+		spillerSinTur = spillere.get(0); // velg den første i listen til å begynne
 		dealCards();
 		lms.sendSpillStatus(lobbyId,
-				new GameStatusMessage(lobbyId, ferdigMedRunde, ikkeGjortSineTrekk, allInSpillere, new ArrayList<>(),
+				new GameStatusMessage(lobbyId, spillere,
 						spillerSinTur, runde));
-		lms.sendKort(ikkeGjortSineTrekk, lobbyId);
+		lms.sendKort(spillere, lobbyId);
 		return spillerSinTur;
 	}
 

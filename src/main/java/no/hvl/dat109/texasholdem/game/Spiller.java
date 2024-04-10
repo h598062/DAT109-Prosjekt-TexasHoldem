@@ -1,6 +1,7 @@
 package no.hvl.dat109.texasholdem.game;
 
 import no.hvl.dat109.texasholdem.enums.Rolle;
+import no.hvl.dat109.texasholdem.enums.Status;
 
 import java.util.Objects;
 
@@ -14,10 +15,13 @@ public class Spiller {
     private String navn;
     private Rolle  rolle;
 
+	private Status status;
+
 	public Spiller(String navn) {
 		this.navn = navn;
 		this.hand = new Hand();
 		this.chips = 1000;
+		this.status = Status.WAITING;
 	}
 
     /**
@@ -33,7 +37,11 @@ public class Spiller {
 
     }
 
-    public void emptyHand() {
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public void emptyHand() {
         hand.clear();
     }
 
@@ -45,13 +53,10 @@ public class Spiller {
 		this.chips = chips;
 	}
 
-	public Rolle getStatus() {
-        return rolle;
+	public Status getStatus() {
+        return status;
     }
 
-    public void setStatus(Rolle rolle) {
-	    this.rolle = rolle;
-    }
 
 	public Hand getHand() {
 		return hand;
@@ -94,6 +99,7 @@ public class Spiller {
 		return "Spiller{" +
 		       "navn='" + navn + '\'' +
 		       ", chips=" + chips +
+		       ", status=" + status +
 		       '}';
 	}
 }
