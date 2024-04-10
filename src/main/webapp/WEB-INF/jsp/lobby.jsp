@@ -258,7 +258,7 @@
     <button id="fold">Fold</button>
     <button id="allin">All In</button>
     <button id="raise">Raise</button>
-    <input id="raiseNum" type="number" placeholder="Amount">
+    <input id="raiseNum" type="number" placeholder="Amount" value="5">
 </fieldset>
 <fieldset id="actions">
     <button id="join">Join</button>
@@ -297,12 +297,11 @@
         console.log('Connected: ' + frame);
         client.subscribe('/lobbystatus/' + lobbyId, handleMessage);
         client.subscribe('/spiller/' + spillerNavn, handleUserMessage);
-        client.subscribe('/spiller/' + spillerNavn, handleSpillerHandMessage);
         let body = {"action": "JOIN", "spillerNavn": spillerNavn};
         client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
     }
 
-    function handleSpillerHandMessage(message) {
+    function handleUserMessage(message) {
         console.log('Received on player hand channel: ' + message.body);
         const handMessage = JSON.parse(message.body);
         const hand = Array.from(handMessage.hand.hand);
@@ -333,10 +332,6 @@
                 spillereListe.appendChild(li);
             }
         }
-    }
-
-    function handleUserMessage(message) {
-        console.log('Received on user channel: ' + message.body);
     }
 
     client.onWebSocketError = (error) => {

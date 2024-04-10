@@ -1,6 +1,7 @@
 package no.hvl.dat109.texasholdem.controller;
 
 import no.hvl.dat109.texasholdem.game.VinnerException;
+import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import no.hvl.dat109.texasholdem.service.LobbyService;
 import no.hvl.dat109.texasholdem.service.SpillerMeldingService;
 import no.hvl.dat109.texasholdem.websocket.message.SpillerActionMessage;
@@ -30,6 +31,7 @@ public class LobbyWebSocketController {
 
 	private final LobbyService          lobbyService;
 	private final SpillerMeldingService sms;
+	private final LobbyMeldingService   lms;
 
 	/**
 	 * Konstruktør for Controlleren<br>
@@ -39,9 +41,11 @@ public class LobbyWebSocketController {
 	 * @param sms          service for å sende meldinger til en spiller
 	 */
 	@Autowired
-	public LobbyWebSocketController(LobbyService lobbyService, SpillerMeldingService sms) {
+	public LobbyWebSocketController(LobbyService lobbyService, SpillerMeldingService sms,
+	                                LobbyMeldingService lms) {
 		this.lobbyService = lobbyService;
 		this.sms          = sms;
+		this.lms          = lms;
 	}
 
 	/**
@@ -87,7 +91,7 @@ public class LobbyWebSocketController {
 			lobbyService.doTrekk(lobbyId, message.getSpillerNavn(), message.getTrekk(),
 					message.getMengde());
 		} catch (VinnerException e) {
-			throw new RuntimeException(e);
+			lms.sendVinner(e.getVinner(), lobbyId);
 		}
 	}
 

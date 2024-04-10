@@ -34,7 +34,10 @@ public class TexasHoldemGame {
 		this.lobbyId            = lobbyId;
 		this.ikkeGjortSineTrekk = new ArrayList<>();
 		ikkeGjortSineTrekk.addAll(spillere);
+
 		erStartet = false;
+
+		raiseTarget = 5;
 
 		kortstokk  = new Kortstokk();
 		this.runde = Round.PREFLOP;
@@ -66,6 +69,8 @@ public class TexasHoldemGame {
 		}
 		if (mengde < raiseTarget) {
 			return null; // Hvis spilleren raiser med mindre enn det allerede er raiset med
+		} else if (mengde == raiseTarget) {
+			return call(spiller); // Hvis spilleren raiser med samme sum som det allerede er raiset med
 		}
 
 		spiller.setChips(spiller.getChips() - mengde); // ta chips fra spiller
@@ -167,6 +172,7 @@ public class TexasHoldemGame {
 
 
 	public void nesteRunde() throws VinnerException {
+		raiseTarget = 5;
 		switch (runde) {
 			case PREFLOP:
 				runde = Round.FLOP;

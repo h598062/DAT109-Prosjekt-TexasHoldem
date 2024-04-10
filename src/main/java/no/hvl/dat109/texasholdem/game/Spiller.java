@@ -17,6 +17,7 @@ public class Spiller {
 	public Spiller(String navn) {
 		this.navn = navn;
 		this.hand = new Hand();
+		this.chips = 1000;
 	}
 
     /**
