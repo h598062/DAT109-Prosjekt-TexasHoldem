@@ -216,10 +216,14 @@ public class TexasHoldemGame {
 			if (spiller.getStatus().equals(Status.FOLD)) {
 				continue;
 			}
-			Hand hand = spiller.getHand();
-			if (hoyesteHand == null || EvaluateCards.compareHand(hoyesteHand, hand) < 0) {
-				hoyesteHand = hand;
-				vinner      = spiller;
+			Hand completeHand = new Hand();
+			completeHand.getHand().addAll(spiller.getHand().getHand());
+			completeHand.getHand().addAll(bordKort);
+
+
+			if (hoyesteHand == null || EvaluateCards.compareHand(hoyesteHand, completeHand) < 0) {
+				hoyesteHand = completeHand;
+				vinner  = spiller;
 			}
 		}
 		return vinner;

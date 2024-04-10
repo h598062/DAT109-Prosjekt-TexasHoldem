@@ -1,11 +1,23 @@
 package no.hvl.dat109.texasholdem.game;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public class EvaluateCards {
+
+    private static final Map<Integer, Function<Hand, Integer>> scoreToHighestCardFunction = new HashMap<>();
+
+
     public static int compareHand(Hand hand1, Hand hand2) {
         int score1 = calculateHandScore(hand1);
         int score2 = calculateHandScore(hand2);
+
+        if (score1 == score2 && scoreToHighestCardFunction.containsKey(score1)) {
+            return Integer.compare(scoreToHighestCardFunction.get(score1).apply(hand1), scoreToHighestCardFunction.get(score2).apply(hand2));
+        }
+
         return Integer.compare(score1, score2);
     }
 
@@ -38,8 +50,10 @@ public class EvaluateCards {
             return 3;
         } else if (isPair(verdiCount)) {
             return 2;
+        } else if (isHighCard(verdiCount)) {
+            return 1;
         } else {
-            return 1; // Høyt kort
+            return 0;
         }
     }
 
@@ -144,5 +158,158 @@ public class EvaluateCards {
             }
         }
         return false;
+    }
+
+    //Metode for å sjekke om det er høyt kort
+    private static boolean isHighCard(int[] verdiCount) {
+        for (int i = 2; i < 15; i++) {
+            if (verdiCount[i] == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    static {
+        scoreToHighestCardFunction.put(1, EvaluateCards::getHighestCard);
+        scoreToHighestCardFunction.put(2, EvaluateCards::getHighestPair);
+        scoreToHighestCardFunction.put(3, EvaluateCards::getHighestTwoPair);
+        scoreToHighestCardFunction.put(4, EvaluateCards::getHighestThreeOfAKind);
+        scoreToHighestCardFunction.put(5, EvaluateCards::getHighestStraight);
+        scoreToHighestCardFunction.put(6, EvaluateCards::getHighestFlush);
+        scoreToHighestCardFunction.put(7, EvaluateCards::getHighestFullHouse);
+        scoreToHighestCardFunction.put(8, EvaluateCards::getHighestFourOfAKind);
+        scoreToHighestCardFunction.put(9, EvaluateCards::getHighestStraightFlush);
+        scoreToHighestCardFunction.put(10, EvaluateCards::getHighestRoyalFlush);
+    }
+
+    // Metode for å finne høyeste royal flush
+    private static Integer getHighestRoyalFlush(Hand hand) {
+        return 14;
+    }
+
+    // Metode for å finne høyeste straight flush
+    private static Integer getHighestStraightFlush(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestStraightFlush = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestStraightFlush) {
+                highestStraightFlush = k.getVerdi();
+            }
+        }
+        return highestStraightFlush;
+    }
+
+    // metode for å finne høyeste fire like
+    private static Integer getHighestFourOfAKind(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestFour = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestFour) {
+                highestFour = k.getVerdi();
+            }
+        }
+        return highestFour;
+    }
+
+    // Metode for å finne høyeste full house
+    private static Integer getHighestFullHouse(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestThree = 0;
+        int highestPair = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestThree) {
+                highestPair = highestThree;
+                highestThree = k.getVerdi();
+            } else if (k.getVerdi() > highestPair) {
+                highestPair = k.getVerdi();
+            }
+        }
+        return highestThree;
+    }
+
+    // Metode for å finne høyeste flush
+    private static Integer getHighestFlush(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestFlush = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestFlush) {
+                highestFlush = k.getVerdi();
+            }
+        }
+        return highestFlush;
+    }
+
+    // Metode for å finne høyeste straight
+    private static Integer getHighestStraight(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestStraight = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestStraight) {
+                highestStraight = k.getVerdi();
+            }
+        }
+        return highestStraight;
+    }
+
+    // Metode for å finne høyeste tre like
+    private static Integer getHighestThreeOfAKind(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestThree = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestThree) {
+                highestThree = k.getVerdi();
+            }
+        }
+        return highestThree;
+    }
+
+    private static Integer getHighestTwoPair(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestPair = 0;
+        int secondHighestPair = 0;
+        int[] verdiCount = new int[15]; // 2-14, 14 being Ace
+
+        for (Kort k : kort) {
+            verdiCount[k.getVerdi()]++;
+        }
+
+        for (int i = 14; i >= 2; i--) {
+            if (verdiCount[i] == 2) {
+                if (i > highestPair) {
+                    secondHighestPair = highestPair;
+                    highestPair = i;
+                } else if (i > secondHighestPair) {
+                    secondHighestPair = i;
+                }
+            }
+        }
+
+        return highestPair * 15 + secondHighestPair; // Multiply by 15 because the highest card value is 14
+    }
+
+    // Metode for å finne høyeste par
+    private static Integer getHighestPair(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestPair = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestPair) {
+                highestPair = k.getVerdi();
+            }
+        }
+        return highestPair;
+    }
+
+    // Metode for å finne høyeste kort
+    private static Integer getHighestCard(Hand hand) {
+        Set<Kort> kort = hand.getHand();
+        int highestCard = 0;
+        for (Kort k : kort) {
+            if (k.getVerdi() > highestCard) {
+                highestCard = k.getVerdi();
+            }
+        }
+        return highestCard;
     }
 }
