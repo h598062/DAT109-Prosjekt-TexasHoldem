@@ -3,11 +3,14 @@ package no.hvl.dat109.texasholdem.game;
 import no.hvl.dat109.texasholdem.enums.Trekk;
 import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import no.hvl.dat109.texasholdem.websocket.message.GameStatusMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TexasHoldemGame {
+	private static final Logger logger = LoggerFactory.getLogger(TexasHoldemGame.class);
 	private final LobbyMeldingService lms;
 	private final String              lobbyId;
 
@@ -71,7 +74,8 @@ public class TexasHoldemGame {
 		ikkeGjortSineTrekk.remove(spiller); // fjern denne spilleren fra ikkje gjort et trekk listen
 		ikkeGjortSineTrekk.addAll(
 				ferdigMedRunde); // alle de andre må nå calle den nye summen, legg de til i trekk listen på nytt
-		ferdigMedRunde = List.of(spiller); // lag en ny ferdig med runde liste og legg til denne spilleren
+		ferdigMedRunde = new ArrayList<>(); // lag en ny ferdig med runde liste og legg til denne spilleren
+		ferdigMedRunde.add(spiller);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.RAISE, mengde);
 
@@ -99,7 +103,9 @@ public class TexasHoldemGame {
 		pott += raiseTarget;
 
 		ikkeGjortSineTrekk.remove(spiller);
+		logger.info("Ikke gjort sine trekk{}",ikkeGjortSineTrekk);
 		ferdigMedRunde.add(spiller);
+		logger.info("Ferdig med runde {}",ferdigMedRunde);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CALL, 0);
 
@@ -110,7 +116,9 @@ public class TexasHoldemGame {
 		if (!erStartet || !spillerSinTur.equals(spiller)) return null;
 
 		ikkeGjortSineTrekk.remove(spiller);
+		logger.info("Ikke gjort sine trekk{}",ikkeGjortSineTrekk);
 		ferdigMedRunde.add(spiller);
+		logger.info("Ferdig med runde {}",ferdigMedRunde);
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CHECK, 0);
 		return velgNesteSpiller();
 	}
@@ -120,6 +128,7 @@ public class TexasHoldemGame {
 
 		spiller.emptyHand();
 		ikkeGjortSineTrekk.remove(spiller);
+		logger.info("Ikke gjort sine trekk {}", ikkeGjortSineTrekk);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.FOLD, 0);
 
