@@ -248,7 +248,11 @@ public class LobbyService {
 				break;
 			case START:
 				logger.info("Spiller {} prøver å starte spillet i lobbyen {} ", spillerNavn, lobbyId);
-
+				if(!spillerNavn.equals(lobby.getLobbyLeder().getNavn())) {
+					logger.warn("Spiller {} er ikke lobbyleder og kan ikke starte spillet", spillerNavn);
+					sms.sendMelding(spillerNavn, "Du er ikke lobbyleder og kan ikke starte spillet");
+					break;
+				}
 				// her må det opprettes et nytt TexasHoldemGame objekt og lagre det i lobbyen
 				game = new TexasHoldemGame(lms, lobbyId, new ArrayList<>(lobby.getSpillere()));
 				lobby.setGame(game);
