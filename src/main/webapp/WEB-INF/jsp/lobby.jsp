@@ -322,6 +322,17 @@
     function handleMessage(message) {
         console.log('Received on lobby status channel: ' + message.body);
         const status = JSON.parse(message.body);
+        const bordkort = status.bordKort;
+        if (bordkort) {
+            const boardCardContainer = document.querySelector('.board-cardContainer');
+            boardCardContainer.innerHTML = '';
+            bordkort.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'board-card card flipped';
+                cardDiv.textContent = card.korttype + " " + card.verdi;
+                boardCardContainer.appendChild(cardDiv);
+            });
+        }
         const spillere = status.spillere;
         if (spillere) {
             const spillereListe = document.getElementById('spillere');
