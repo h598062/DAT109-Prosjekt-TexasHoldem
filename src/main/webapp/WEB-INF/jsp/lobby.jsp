@@ -25,25 +25,242 @@
             crossorigin="anonymous"
     ></script>
     <link href="resources/static/css/style.css" rel="stylesheet" type="text/css">
+    <style>
+        html,
+        body {
+            background-color: darkgrey;
+            margin: 0;
+            padding: 0;
+            overscroll-behavior: none;
+        }
+
+        main {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .game {
+            width: clamp(60vw, 80vw, 90vw);
+            height: clamp(30vh, 60vh, 80vh);
+            margin: 1em;
+            background: antiquewhite;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+            min-width: 450px;
+            min-height: 350px;
+            max-width: 800px;
+            max-height: 600px;
+        }
+
+        .player {
+            height: 30%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .board {
+            height: 50%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .top {
+            height: 20%;
+            width: 100%;
+        }
+
+        .player-cardContainer {
+            width: 100%;
+            height: fit-content;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            margin-bottom: 0.5em;
+        }
+
+        .card {
+            outline: 1px solid black;
+        }
+
+        .player-card {
+            width: 3em;
+            height: 4em;
+            background: crimson;
+            margin: 0.1em;
+        }
+
+        .player-bar {
+            height: 100%;
+            width: 20%;
+        }
+
+        .center-bar {
+            height: 100%;
+            width: 60%;
+        }
+
+        .other-player {
+            width: 100%;
+            height: 20%;
+            display: flex;
+        }
+
+        #left-player-bar .other-player {
+            justify-content: flex-start;
+        }
+
+        #right-player-bar .other-player {
+            justify-content: flex-end;
+        }
+
+        .other-cardContainer {
+            display: flex;
+            flex-direction: row;
+            width: fit-content;
+            height: fit-content;
+            margin: 0.2em;
+        }
+
+        .other-card {
+            width: 1.5em;
+            height: 2em;
+            background: chocolate;
+            margin: 0.1em;
+        }
+
+        .board-cardContainer {
+            display: flex;
+            flex-direction: row;
+            width: fit-content;
+            height: fit-content;
+            margin: 0.2em;
+            justify-content: center;
+        }
+
+        .board-card {
+            width: 3em;
+            height: 4em;
+            background: darkgrey;
+            margin: 0.1em;
+        }
+
+        .flipped {
+            background: green;
+        }
+    </style>
 </head>
 <body>
+<%--<main>--%>
 <h1>Lobby ${lobbyId}</h1>
 <fieldset>
     <legend>Spillere</legend>
     <ul id="spillere"></ul>
 </fieldset>
-<fieldset>
-    <legend>Trekk</legend>
-    <button id="call">Call</button>
+<fieldset id="game" class="game">
+    <div id="left-player-bar" class="player-bar">
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+    </div>
+    <div id="center-bar" class="center-bar">
+        <div class="top"></div>
+        <div class="board">
+            <div class="board-cardContainer">
+                <div class="board-card card flipped"></div>
+                <div class="board-card card flipped"></div>
+                <div class="board-card card flipped"></div>
+                <div class="board-card card"></div>
+                <div class="board-card card"></div>
+            </div>
+        </div>
+        <div class="player" style="">
+            <div id="cards" class="player-cardContainer">
+                <div class="player-card card"></div>
+                <div class="player-card card"></div>
+            </div>
+        </div>
+    </div>
+    <div id="right-player-bar" class="player-bar">
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+        <div class="other-player">
+            <div class="other-cardContainer">
+                <div class="other-card card"></div>
+                <div class="other-card card"></div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+<fieldset id="gameControls">
     <button id="check">Check</button>
+    <button id="call">Call</button>
     <button id="fold">Fold</button>
     <button id="allin">All In</button>
     <button id="raise">Raise</button>
-    <label for="raiseNum">Number:</label>
-    <input type="number" id="raiseNum" name="numberInput" value="0">
+    <input id="raiseNum" type="number" placeholder="Amount">
 </fieldset>
-<fieldset>
-    <legend>Actions</legend>
+<fieldset id="actions">
     <button id="join">Join</button>
     <button id="ready">Ready</button>
     <button id="unready">Unready</button>
@@ -184,5 +401,6 @@
 
     document.getElementById('start').addEventListener('click', start);
 </script>
+<%--</main>--%>
 </body>
 </html>
