@@ -54,7 +54,10 @@
 
 <fieldset>
     <div class="div1">
+        <p>Kortene dine:</p>
+        <ul>
 
+        </ul>
     </div>
     <div class="div2">
 
@@ -77,8 +80,27 @@
         console.log('Connected: ' + frame);
         client.subscribe('/lobbystatus/' + lobbyId, handleMessage);
         client.subscribe('/spiller/' + spillerNavn, handleUserMessage);
+        client.subscribe('/spiller/' + spillerNavn, handleSpillerHandMessage);
         let body = {"action": "JOIN", "spillerNavn": spillerNavn};
         client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
+    }
+
+    function handleSpillerHandMessage(message) {
+        console.log('Received on player hand channel: ' + message.body);
+        const handMessage = JSON.parse(message.body);
+        const hand = Array.from(handMessage.hand.hand);
+
+        console.log('Player\'s hand:', hand);
+
+        const handUl = document.querySelector('.div1 ul');
+
+        handUl.innerHTML = '';
+
+        hand.forEach(card => {
+            const cardItem = document.createElement('li');
+            cardItem.textContent = card.korttype + " " + card.verdi;
+            handUl.appendChild(cardItem);
+        });
     }
 
     function handleMessage(message) {
