@@ -29,8 +29,11 @@ import org.springframework.stereotype.Controller;
 public class LobbyWebSocketController {
 	private static final Logger logger = LoggerFactory.getLogger(LobbyWebSocketController.class);
 
+	@Autowired
 	private final LobbyService          lobbyService;
+	@Autowired
 	private final SpillerMeldingService sms;
+	@Autowired
 	private final LobbyMeldingService   lms;
 
 	/**
@@ -40,7 +43,6 @@ public class LobbyWebSocketController {
 	 * @param lobbyService service for lobbyen
 	 * @param sms          service for å sende meldinger til en spiller
 	 */
-	@Autowired
 	public LobbyWebSocketController(LobbyService lobbyService, SpillerMeldingService sms,
 	                                LobbyMeldingService lms) {
 		this.lobbyService = lobbyService;

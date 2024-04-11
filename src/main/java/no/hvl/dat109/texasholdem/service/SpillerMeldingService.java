@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 public class SpillerMeldingService {
 	private final Logger logger = LoggerFactory.getLogger(SpillerMeldingService.class);
 
+	@Autowired
 	private final SimpMessagingTemplate smt;
 
-	@Autowired
 	public SpillerMeldingService(SimpMessagingTemplate smt) {
 		this.smt = smt;
 	}

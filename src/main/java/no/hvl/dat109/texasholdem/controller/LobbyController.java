@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LobbyController {
 	private static final Logger logger = LoggerFactory.getLogger(LobbyController.class);
 
+	@Autowired
 	private final LobbyService lobbyService;
 
-	@Autowired
 	public LobbyController(LobbyService lobbyService) {
 		this.lobbyService = lobbyService;
 	}

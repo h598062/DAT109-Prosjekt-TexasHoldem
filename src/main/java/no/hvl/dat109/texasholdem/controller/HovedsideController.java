@@ -19,10 +19,11 @@ import java.util.List;
 
 @Controller
 public class HovedsideController {
-	private final LobbyService lobbyService;
 	Logger logger = LoggerFactory.getLogger(HovedsideController.class);
 
 	@Autowired
+	private final LobbyService lobbyService;
+
 	public HovedsideController(LobbyService lobbyService) {
 		this.lobbyService = lobbyService;
 	}

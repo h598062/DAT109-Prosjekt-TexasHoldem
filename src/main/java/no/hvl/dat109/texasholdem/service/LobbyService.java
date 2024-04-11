@@ -24,20 +24,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class LobbyService {
+	Logger logger = LoggerFactory.getLogger(LobbyService.class);
+
+	@Autowired
 	private final LobbyMeldingService              lms;
+	@Autowired
 	private final SpillerMeldingService            sms;
 	/**
 	 * ingen direkte tilgang til lobbies hashmap utenfor denne klassen
 	 */
 	private final ConcurrentHashMap<String, Lobby> lobbies;
-	Logger logger = LoggerFactory.getLogger(LobbyService.class);
 	private TexasHoldemGame game;
 
 	/**
 	 * Oppretter en ny lobby service.<br>
 	 * Bruk @Autowired for å få en instans av denne klassen.
 	 */
-	@Autowired
 	public LobbyService(SpillerMeldingService sms, LobbyMeldingService lms) {
 		this.lobbies = new ConcurrentHashMap<>();
 		this.sms     = sms;

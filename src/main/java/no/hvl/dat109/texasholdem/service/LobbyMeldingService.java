@@ -15,14 +15,13 @@ import java.util.List;
 
 @Service
 public class LobbyMeldingService {
-
 	private static final Logger logger = LoggerFactory.getLogger(LobbyMeldingService.class);
 
+	@Autowired
 	private final SpillerMeldingService sms;
-
+	@Autowired
 	private final SimpMessagingTemplate smt;
 
-	@Autowired
 	public LobbyMeldingService(SpillerMeldingService sms, SimpMessagingTemplate smt) {
 		this.sms = sms;
 		this.smt = smt;
