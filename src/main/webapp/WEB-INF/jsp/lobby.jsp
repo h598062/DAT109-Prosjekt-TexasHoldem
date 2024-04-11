@@ -280,7 +280,11 @@
     console.log('Protocol: ' + protocol);
     const host = window.location.host;
     console.log('Host: ' + host);
-    const client = new Client({brokerURL: protocol + "//" + host + "/lobby-ws"});
+    const path = window.location.pathname;
+    console.log('Path: ' + path);
+    const wsBrokerURL = protocol + "//" + host + path + "-ws";
+    console.log('Broker URL: ' + wsBrokerURL)
+    const client = new Client({brokerURL: wsBrokerURL});
     client.onConnect = (frame) => {
         console.log('Connected: ' + frame);
         client.subscribe('/lobbystatus/' + lobbyId, handleMessage);
@@ -290,8 +294,9 @@
     }
 
     function handleUserMessage(message) {
-        console.log('Received on player hand channel: ' + message.body);
         const handMessage = JSON.parse(message.body);
+        console.log('Received on player hand channel:');
+        console.log(handMessage);
         const hand = Array.from(handMessage.hand.hand);
 
         console.log('Player\'s hand:', hand);
@@ -304,8 +309,9 @@
     }
 
     function handleMessage(message) {
-        console.log('Received on lobby status channel: ' + message.body);
         const status = JSON.parse(message.body);
+        console.log('Received on lobby status channel:');
+        console.log(status);
         const bordkort = status.bordKort;
         if (bordkort) {
             const boardCardContainer = document.querySelector('.board-cardContainer');
