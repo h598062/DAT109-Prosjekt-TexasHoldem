@@ -10,7 +10,7 @@
     </parent>
     <groupId>no.hvl.dat109</groupId>
     <artifactId>TexasHoldem</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <packaging>war</packaging>
     <name>DAT109-Prosjekt-TexasHoldem</name>
     <description>DAT109-Prosjekt-TexasHoldem</description>
