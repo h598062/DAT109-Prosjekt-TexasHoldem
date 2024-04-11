@@ -11,24 +11,27 @@ public class GameStatusMessage extends LobbyMessage {
 	private List<SpillerInfo>     spillere;
 	private String                spillerSinTur;
 	private TexasHoldemGame.Round runde;
+	private int                   pott;
+	private int                   raiseTarget;
 
 	/**
 	 * Lag en ny lobby status melding
 	 *
-	 * @param lobbyId              id til lobbyen
-	 * @param ferdigeSpillere      liste over spillere som er ferdige med sitt trekk
-	 * @param ventendeSpillere     liste over spillere som venter på å gjøre sitt trekk
-	 * @param allInSpillere        liste over spillere som er all-in
-	 * @param spillereSomHarFoldet liste over spillere som har foldet
-	 * @param spillerSinTur        spilleren som skal gjøre sitt trekk
-	 * @param runde                hvilken runde vi er på
+	 * @param lobbyId       id til lobbyen
+	 * @param spillere      liste over spillere
+	 * @param spillerSinTur spilleren som skal gjøre sitt trekk
+	 * @param runde         hvilken runde vi er på
+	 * @param pott
+	 * @param raiseTarget
 	 */
 	public GameStatusMessage(String lobbyId, List<Spiller> spillere, Spiller spillerSinTur,
-	                         TexasHoldemGame.Round runde) {
+	                         TexasHoldemGame.Round runde, int pott, int raiseTarget) {
 		super(lobbyId);
 		this.spillere      = new ArrayList<>();
-		this.spillerSinTur = spillerSinTur.getNavn();
+		this.spillerSinTur = spillerSinTur == null ? "" : spillerSinTur.getNavn();
 		this.runde         = runde;
+		this.pott          = pott;
+		this.raiseTarget   = raiseTarget;
 		spillere.forEach(s -> {
 			SpillerInfo si = new SpillerInfo();
 			si.setNavn(s.getNavn());
@@ -39,6 +42,22 @@ public class GameStatusMessage extends LobbyMessage {
 	}
 
 	public GameStatusMessage() {
+	}
+
+	public int getPott() {
+		return pott;
+	}
+
+	public void setPott(int pott) {
+		this.pott = pott;
+	}
+
+	public int getRaiseTarget() {
+		return raiseTarget;
+	}
+
+	public void setRaiseTarget(int raiseTarget) {
+		this.raiseTarget = raiseTarget;
 	}
 
 	public List<SpillerInfo> getSpillere() {

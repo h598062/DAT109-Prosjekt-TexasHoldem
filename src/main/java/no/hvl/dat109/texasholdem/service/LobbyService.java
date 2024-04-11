@@ -94,7 +94,10 @@ public class LobbyService {
 		Lobby lobby = finnLobby(spillerNavn, lobbyId);
 		game = lobby.getGame();
 		Spiller spiller = finnSpiller(spillerNavn, lobby);
-
+		if (game.getSpillerSinTur() == null) {
+			logger.info("Ingen spillere skal gjøre et trekk i lobby {}, fortsetter med runden", lobbyId);
+			return game.velgNesteSpiller();
+		}
 		Spiller nesteSpiller = null;
 		switch (trekk) {
 			case CALL:

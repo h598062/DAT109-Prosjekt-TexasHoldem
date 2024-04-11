@@ -17,11 +17,22 @@ public class Spiller {
 
 	private Status status;
 
+	private int currentBet;
+
+	public int getCurrentBet() {
+		return currentBet;
+	}
+
+	public void setCurrentBet(int currentBet) {
+		this.currentBet = currentBet;
+	}
+
 	public Spiller(String navn) {
 		this.navn = navn;
 		this.hand = new Hand();
 		this.chips = 1000;
 		this.status = Status.WAITING;
+		this.currentBet = 0;
 	}
 
     /**
