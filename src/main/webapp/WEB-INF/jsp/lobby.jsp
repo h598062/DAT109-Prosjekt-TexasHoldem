@@ -172,6 +172,17 @@
     <legend>Spillere</legend>
     <ul id="spillere"></ul>
 </fieldset>
+<fieldset>
+    <div>
+        <h3 id="forrigeTrekk">
+            Forrige trekk:
+        </h3>
+        <h3 id="nesteSpiller">
+
+        </h3>
+    </div>
+</fieldset>
+
 <fieldset id="game" class="game">
     <div id="left-player-bar" class="player-bar">
         <div class="other-player">
@@ -337,7 +348,30 @@
                 }, 5000);
             }
         }
-
+        if (msg.trekk) {
+            let lastMove = document.getElementById('forrigeTrekk');
+            let trekkTekst = '';
+            switch (msg.trekk) {
+                case 'ALL_IN':
+                    trekkTekst = 'gikk all in';
+                    break;
+                case 'CHECK':
+                    trekkTekst = 'valgte å checke';
+                    break;
+                case 'CALL':
+                    trekkTekst = 'valgte å calle';
+                    break;
+                case 'FOLD':
+                    trekkTekst = 'valgte å folde';
+                    break;
+                case 'RAISE':
+                    trekkTekst = 'høynet til ' + msg.mengde;
+                    break;
+                default:
+                    trekkTekst = 'gjorde et ukjent trekk';
+            }
+            lastMove.textContent = 'Forrige trekk: ' + msg.spillerNavn + ' ' + trekkTekst;
+        }
 
         const bordkort = msg.bordKort;
         if (bordkort) {
