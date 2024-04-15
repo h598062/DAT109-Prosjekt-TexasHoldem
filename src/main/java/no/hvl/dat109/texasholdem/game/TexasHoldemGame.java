@@ -267,6 +267,9 @@ public class TexasHoldemGame {
 				lms.sendVinner(vinner, lobbyId);
 				return;
 		}
+		lms.sendSpillStatus(lobbyId,
+				new GameStatusMessage(lobbyId, spillere,
+						spillerSinTur, runde, pott, raiseTarget));
 		lms.sendBordKort(lobbyId, bordKort);
 	}
 
