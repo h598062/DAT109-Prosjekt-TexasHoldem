@@ -70,27 +70,25 @@ public class TexasHoldemGame {
 	 *
 	 * @param spiller
 	 * @param nyRaiseMengde
-	 *
-	 * @return
 	 */
-	public Spiller raise(Spiller spiller, int nyRaiseMengde) {
+	public void raise(Spiller spiller, int nyRaiseMengde) {
 
 		// hvis det ikke er denne spilleren sin tur eller hvis spillet ikke er startet, avbryt
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
-			return null;
+			return;
 		}
 
 		if (nyRaiseMengde <= 0) {
-			return null;
+			return;
 		}
 
 		if (spiller.getChips() <= 0) {
-			return null;
+			return;
 		}
 
 		if (raiseTarget == 0) {
 			if (spiller.getChips() < nyRaiseMengde) {
-				return null;
+				return;
 			} else {
 				raiseTarget = nyRaiseMengde;
 				spiller.setChips(spiller.getChips() - nyRaiseMengde);
@@ -100,7 +98,7 @@ public class TexasHoldemGame {
 		} else {
 			if (spiller.getCurrentBet() == 0) {
 				if (spiller.getChips() < nyRaiseMengde + raiseTarget) {
-					return null;
+					return;
 				} else {
 					spiller.setChips(spiller.getChips() - nyRaiseMengde - raiseTarget);
 					pott += nyRaiseMengde + raiseTarget;
@@ -109,7 +107,7 @@ public class TexasHoldemGame {
 				}
 			} else {
 				if (spiller.getChips() < nyRaiseMengde + raiseTarget - spiller.getCurrentBet()) {
-					return null;
+					return;
 				} else {
 					spiller.setChips(spiller.getChips() - nyRaiseMengde - raiseTarget + spiller.getCurrentBet());
 					pott += nyRaiseMengde + raiseTarget - spiller.getCurrentBet();
@@ -125,24 +123,23 @@ public class TexasHoldemGame {
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.RAISE, nyRaiseMengde);
 
-		return velgNesteSpiller();
+		velgNesteSpiller();
 	}
 
 	/**
 	 * Metode for å calle
 	 *
 	 * @param spiller
-	 *
-	 * @return spiller
 	 */
-	public Spiller call(Spiller spiller) {
+	public void call(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
-			return null;
+			return;
 		}
 
 		// Trenger kanskje enda en if sjekk for å sjekke all in dersom call er all in
 		if (spiller.getChips() <= raiseTarget - spiller.getCurrentBet()) {
-			return allIn(spiller);
+			allIn(spiller);
+			return;
 		}
 
 		if (spiller.getCurrentBet() == 0) {
@@ -160,28 +157,28 @@ public class TexasHoldemGame {
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CALL, 0);
 
-		return velgNesteSpiller();
+		velgNesteSpiller();
 	}
 
-	public Spiller check(Spiller spiller) {
+	public void check(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
-			return null;
+			return;
 		}
 
 		if (spiller.getCurrentBet() != raiseTarget) {
-			return null;
+			return;
 		}
 
 		spiller.setStatus(Status.DONE);
 		logger.info("Spillere: {}", spillere);
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.CHECK, 0);
-		return velgNesteSpiller();
+		velgNesteSpiller();
 	}
 
-	public Spiller fold(Spiller spiller) {
+	public void fold(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
-			return null;
+			return;
 		}
 
 		spiller.emptyHand();
@@ -190,15 +187,15 @@ public class TexasHoldemGame {
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.FOLD, 0);
 
-		return velgNesteSpiller();
+		velgNesteSpiller();
 	}
 
-	public Spiller allIn(Spiller spiller) {
+	public void allIn(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
-			return null;
+			return;
 		}
 		if (spiller.getChips() <= 0) {
-			return null;
+			return;
 		}
 
 		int allInnMengde = spiller.getChips();
@@ -219,7 +216,7 @@ public class TexasHoldemGame {
 
 		lms.sendTrekk(lobbyId, spiller.getNavn(), Trekk.ALL_IN, 0);
 
-		return velgNesteSpiller();
+		velgNesteSpiller();
 	}
 
 	public Spiller velgNesteSpiller() {
