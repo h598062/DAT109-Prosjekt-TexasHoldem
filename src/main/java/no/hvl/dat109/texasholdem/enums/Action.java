@@ -1,7 +1,7 @@
 package no.hvl.dat109.texasholdem.enums;
 
 public enum Action {
-	JOIN, LEAVE, AFK, READY, UNREADY, DISCONNECT, START, END
+	JOIN, LEAVE, AFK, READY, UNREADY, DISCONNECT, START, END, RESTART
 
 	// START og STOPP er for lobbyleder, for å starte og stoppe spillet
 

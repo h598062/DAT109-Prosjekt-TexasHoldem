@@ -5,7 +5,6 @@ import no.hvl.dat109.texasholdem.enums.Trekk;
 import no.hvl.dat109.texasholdem.game.Lobby;
 import no.hvl.dat109.texasholdem.game.Spiller;
 import no.hvl.dat109.texasholdem.game.TexasHoldemGame;
-import no.hvl.dat109.texasholdem.game.VinnerException;
 import no.hvl.dat109.texasholdem.websocket.LobbyAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,6 @@ public class LobbyService {
 	 * ingen direkte tilgang til lobbies hashmap utenfor denne klassen
 	 */
 	private final ConcurrentHashMap<String, Lobby> lobbies;
-	private TexasHoldemGame game;
 
 	/**
 	 * Oppretter en ny lobby service.<br>
@@ -88,48 +86,47 @@ public class LobbyService {
 	 *
 	 * @return Boolean True om det gikk, false om det ikke gikk
 	 */
-	public Spiller doTrekk(String lobbyId, String spillerNavn, Trekk trekk, int mengde) throws VinnerException {
+	public void doTrekk(String lobbyId, String spillerNavn, Trekk trekk, int mengde) {
+		Lobby           lobby   = finnLobby(spillerNavn, lobbyId);
+		TexasHoldemGame game    = lobby.getGame();
+		Spiller         spiller = finnSpiller(spillerNavn, lobby);
 
 		// Returnererer null for å ikke få feilmelding når noen caller før game er startet
-		if (game == null) return null;
+		if (game == null) return;
 
-		Lobby lobby = finnLobby(spillerNavn, lobbyId);
-		game = lobby.getGame();
-		Spiller spiller = finnSpiller(spillerNavn, lobby);
 		if (game.getSpillerSinTur() == null) {
 			logger.info("Ingen spillere skal gjøre et trekk i lobby {}, fortsetter med runden", lobbyId);
-			return game.velgNesteSpiller();
+			game.velgNesteSpiller();
+			return;
 		}
-		Spiller nesteSpiller = null;
 		switch (trekk) {
 			case CALL:
 				logger.info("Spiller {} har callet i lobbyen {}", spillerNavn, lobbyId);
-				nesteSpiller = game.call(spiller);
+				game.call(spiller);
 				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case CHECK:
 				// muligens slå sammen CALL og CHECK? begge "godtar" nåværende sum på bordet
 				logger.info("Spiller {} har checket i lobbyen {}", spillerNavn, lobbyId);
-				nesteSpiller = game.check(spiller);
+				game.check(spiller);
 				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case FOLD:
 				logger.info("Spiller {} har foldet i lobbyen {}", spillerNavn, lobbyId);
-				nesteSpiller = game.fold(spiller);
+				game.fold(spiller);
 				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 			case RAISE:
 				logger.info("Spiller {} har raiset med {} i lobbyen {}", spillerNavn, mengde, lobbyId);
 				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
-				nesteSpiller = game.raise(spiller, mengde);
+				game.raise(spiller, mengde);
 				break;
 			case ALL_IN:
 				logger.info("Spiller {} har gått ALL INN i lobbyen {}", spillerNavn, lobbyId);
-				nesteSpiller = game.allIn(spiller);
+				game.allIn(spiller);
 				// send feilmelding med sms.sendMelding() hvis det ikke gikk (ikke din tur etc.)
 				break;
 		}
-		return nesteSpiller;
 	}
 
 	/**
@@ -210,22 +207,25 @@ public class LobbyService {
 
 	public boolean doAction(String lobbyId, String spillerNavn, Action action) {
 		Lobby   lobby   = finnLobby(spillerNavn, lobbyId);
+		TexasHoldemGame game    = lobby.getGame();
 		Spiller spiller = finnSpiller(spillerNavn, lobby);
 		boolean suksess = false;
 		switch (action) {
 			case JOIN:
 				logger.info("Spiller {} har joinet lobbyen {}", spillerNavn, lobbyId);
-				logger.error("JOIN er ikke ferdig implementert");
-				// TODO: Ferdigstill join implementasjon?
+
 				lobby.leggTilSpiller(spiller);
-				lms.sendAction(lobbyId, lobby.getSpillernesNavn(), spillerNavn, Action.JOIN);
+				lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.JOIN);
 				suksess = true;
 				break;
 			case LEAVE:
 				logger.info("Spiller {} har forlatt lobbyen {} ", spillerNavn, lobbyId);
-				logger.error("LEAVE er ikke implementert");
-				// TODO: Implementer leave
-				// ikke viktig for første demo
+
+				// Fjerner spilleren fra lobbyen
+				game.fjernSpiller(spiller);
+				lobby.fjernSpiller(spiller);
+				lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.LEAVE);
+				suksess = true;
 				break;
 			case AFK:
 				logger.info("Spiller {} er AFK i lobbyen {} ", spillerNavn, lobbyId);
@@ -255,21 +255,51 @@ public class LobbyService {
 				logger.info("Spiller {} prøver å starte spillet i lobbyen {} ", spillerNavn, lobbyId);
 				if(!spillerNavn.equals(lobby.getLobbyLeder().getNavn())) {
 					logger.warn("Spiller {} er ikke lobbyleder og kan ikke starte spillet", spillerNavn);
-					sms.sendMelding(spillerNavn, "Du er ikke lobbyleder og kan ikke starte spillet");
+					sms.sendMelding(spillerNavn, "{\"msg\":\"Du er ikke lobbyleder og kan ikke starte spillet\"}");
 					break;
 				}
 				// her må det opprettes et nytt TexasHoldemGame objekt og lagre det i lobbyen
 				game = new TexasHoldemGame(lms, lobbyId, new ArrayList<>(lobby.getSpillere()));
 				lobby.setGame(game);
-				lms.sendAction(lobbyId, lobby.getSpillernesNavn(), spillerNavn, Action.START);
+				lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.START);
 				game.startSpill();
 				suksess = true;
 				break;
 			case END:
 				logger.info("Spiller {} prøver å stoppe spillet i lobbyen {} ", spillerNavn, lobbyId);
-				logger.error("END er ikke implementert");
-				// TODO: Implementer end
-				// ikke viktig for første demo
+				if (!lobby.getSpillere().contains(lobby.getLobbyLeder())) {
+					logger.warn("Lobbyleder er ikke lenger i lobbyen, spillet blir avsluttet");
+					sms.sendMelding(spillerNavn, "{\"msg\":\"Lobbyleder er ikke lenger i lobbyen, spillet avsluttes...\"}");
+					lobbies.remove(lobbyId);
+					lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.END);
+					break;
+				}
+				if (!spillerNavn.equals(lobby.getLobbyLeder().getNavn())) {
+					logger.warn("Spiller {} er ikke lobbyleder og kan ikke avslutte spillet", spillerNavn);
+					sms.sendMelding(spillerNavn, "{\"msg\":\"Du er ikke lobbyleder og kan ikke avslutte spillet\"}");
+					break;
+				}
+				// fjern denne lobbyen fra lobby listen
+				lobbies.remove(lobbyId);
+				lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.END);
+				break;
+			case RESTART:
+				logger.info("Spiller {} prøver å restarte spillet i lobbyen {} ", spillerNavn, lobbyId);
+				if (!spillerNavn.equals(lobby.getLobbyLeder().getNavn())) {
+					logger.warn("Spiller {} er ikke lobbyleder og kan ikke restarte spillet", spillerNavn);
+					sms.sendMelding(spillerNavn, "{\"msg\":\"Du er ikke lobbyleder og kan ikke restarte spillet\"}");
+					break;
+				}
+				if (game.isErFerdig()) {
+					game = new TexasHoldemGame(lms, lobbyId, new ArrayList<>(lobby.getSpillere()));
+					lobby.setGame(game);
+					lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.RESTART);
+					game.startSpill();
+					suksess = true;
+				} else {
+					logger.warn("Spillet i lobby {} er ikke ferdig og kan ikke restartes", lobbyId);
+					sms.sendMelding(spillerNavn, "{\"msg\": \"Spillet er ikke ferdig og kan ikke restartes\"}");
+				}
 				break;
 		}
 		return suksess;

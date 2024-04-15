@@ -27,6 +27,8 @@ public class TexasHoldemGame {
 	private Round runde;
 
 	private boolean erStartet;
+	private boolean erFerdig;
+	private Spiller vinner;
 
 	public TexasHoldemGame(LobbyMeldingService lms, String lobbyId, List<Spiller> spillere) {
 		this.lms      = lms;
@@ -35,6 +37,9 @@ public class TexasHoldemGame {
 		this.spillere.addAll(spillere);
 
 		erStartet = false;
+		erFerdig  = false;
+
+		vinner = null;
 
 		raiseTarget = 0;
 
@@ -67,10 +72,8 @@ public class TexasHoldemGame {
 	 * @param nyRaiseMengde
 	 *
 	 * @return
-	 *
-	 * @throws VinnerException
 	 */
-	public Spiller raise(Spiller spiller, int nyRaiseMengde) throws VinnerException {
+	public Spiller raise(Spiller spiller, int nyRaiseMengde) {
 
 		// hvis det ikke er denne spilleren sin tur eller hvis spillet ikke er startet, avbryt
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
@@ -131,10 +134,8 @@ public class TexasHoldemGame {
 	 * @param spiller
 	 *
 	 * @return spiller
-	 *
-	 * @throws VinnerException
 	 */
-	public Spiller call(Spiller spiller) throws VinnerException {
+	public Spiller call(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
 			return null;
 		}
@@ -162,7 +163,7 @@ public class TexasHoldemGame {
 		return velgNesteSpiller();
 	}
 
-	public Spiller check(Spiller spiller) throws VinnerException {
+	public Spiller check(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
 			return null;
 		}
@@ -178,7 +179,7 @@ public class TexasHoldemGame {
 		return velgNesteSpiller();
 	}
 
-	public Spiller fold(Spiller spiller) throws VinnerException {
+	public Spiller fold(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
 			return null;
 		}
@@ -192,7 +193,7 @@ public class TexasHoldemGame {
 		return velgNesteSpiller();
 	}
 
-	public Spiller allIn(Spiller spiller) throws VinnerException {
+	public Spiller allIn(Spiller spiller) {
 		if (!erStartet || !spillerSinTur.equals(spiller)) {
 			return null;
 		}
@@ -221,11 +222,13 @@ public class TexasHoldemGame {
 		return velgNesteSpiller();
 	}
 
-	public Spiller velgNesteSpiller() throws VinnerException {
+	public Spiller velgNesteSpiller() {
 		// velg neste spiller fra ikkeGjortSineTrekkListe
-		Spiller vinner = sjekkEnesteIgjen();
-		if (vinner != null) {
-			throw new VinnerException(vinner);
+		Spiller enesteIgjen = sjekkEnesteIgjen();
+		if (enesteIgjen != null) {
+			erFerdig = true;
+			vinner   = enesteIgjen;
+			lms.sendVinner(vinner, lobbyId);
 		}
 		if (sjekkOmRundeErFerdig()) {
 			nesteRunde();
@@ -239,12 +242,12 @@ public class TexasHoldemGame {
 	}
 
 
-	public void nesteRunde() throws VinnerException {
+	public void nesteRunde() {
 		raiseTarget = 0;
 		spillere.stream().filter(s -> s.getStatus().equals(Status.DONE))
 		        .forEach(s -> {
 			        s.setStatus(Status.WAITING);
-					s.setCurrentBet(0);
+			        s.setCurrentBet(0);
 		        });
 		switch (runde) {
 			case PREFLOP:
@@ -262,8 +265,10 @@ public class TexasHoldemGame {
 				addCardToTable();
 				break;
 			case RIVER:
-				Spiller vinner = sjekkVinner();
-				throw new VinnerException(vinner);
+				vinner = sjekkVinner();
+				erFerdig = true;
+				lms.sendVinner(vinner, lobbyId);
+				return;
 		}
 		lms.sendBordKort(lobbyId, bordKort);
 	}
@@ -283,6 +288,7 @@ public class TexasHoldemGame {
 			if (hoyesteHand == null || EvaluateCards.compareHand(hoyesteHand, completeHand) < 0) {
 				hoyesteHand = completeHand;
 				vinner      = spiller;
+				erFerdig    = true;
 			}
 		}
 		return vinner;
@@ -332,6 +338,21 @@ public class TexasHoldemGame {
 						spillerSinTur, runde, pott, raiseTarget));
 		lms.sendKort(spillere, lobbyId);
 		return spillerSinTur;
+	}
+
+	public boolean isErStartet() {
+		return erStartet;
+	}
+
+	public boolean isErFerdig() {
+		return erFerdig;
+	}
+
+	public void fjernSpiller(Spiller spiller) {
+		spillere.remove(spiller);
+		if (spiller.equals(spillerSinTur)) {
+			spillerSinTur = velgNesteSpiller();
+		}
 	}
 
 	public enum Round {

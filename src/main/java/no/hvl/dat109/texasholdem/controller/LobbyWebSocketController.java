@@ -1,6 +1,5 @@
 package no.hvl.dat109.texasholdem.controller;
 
-import no.hvl.dat109.texasholdem.game.VinnerException;
 import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import no.hvl.dat109.texasholdem.service.LobbyService;
 import no.hvl.dat109.texasholdem.service.SpillerMeldingService;
@@ -80,7 +79,6 @@ public class LobbyWebSocketController {
 	 * @param lobbyId lobbyId som meldingen refererer til, denne hentes dynamisk fra path i request
 	 * @param message meldingen som skal håndteres, Spring parser denne fra JSON til SpillerTrekkMessage
 	 *
-	 * @return melding som skal broadcastes til alle i lobbyen, eller null hvis ingenting skal oppdateres
 	 */
 	@MessageMapping("/trekk/{lobbyId}")
 	public void lobbyTrekkHandler(@DestinationVariable String lobbyId,
@@ -89,12 +87,10 @@ public class LobbyWebSocketController {
 		if (ugyldigMelding(lobbyId, message)) {
 			return;
 		}
-		try {
-			lobbyService.doTrekk(lobbyId, message.getSpillerNavn(), message.getTrekk(),
-					message.getMengde());
-		} catch (VinnerException e) {
-			lms.sendVinner(e.getVinner(), lobbyId);
-		}
+
+		lobbyService.doTrekk(lobbyId, message.getSpillerNavn(), message.getTrekk(),
+				message.getMengde());
+
 	}
 
 	/**
@@ -105,7 +101,6 @@ public class LobbyWebSocketController {
 	 * @param lobbyId lobbyId som meldingen refererer til, denne hentes dynamisk fra path i request
 	 * @param message meldingen som skal håndteres, Spring parser denne fra JSON til SpillerActionMessage
 	 *
-	 * @return melding som skal broadcastes til alle i lobbyen, eller null hvis ingenting skal oppdateres
 	 */
 	@MessageMapping("/action/{lobbyId}")
 	public void lobbyActionHandler(@DestinationVariable String lobbyId,
@@ -116,7 +111,8 @@ public class LobbyWebSocketController {
 		}
 		if (!lobbyService.doAction(lobbyId, message.getSpillerNavn(), message.getAction())) {
 			sms.sendMelding(message.getSpillerNavn(),
-					String.format("Kunne ikke utføre handling %s i lobby %s", message.getAction(), lobbyId));
+					String.format("{\"msg\": \"Kunne ikke utføre handling %s i lobby %s\"}", message.getAction(),
+							lobbyId));
 		}
 	}
 }

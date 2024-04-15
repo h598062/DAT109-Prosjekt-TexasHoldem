@@ -159,6 +159,10 @@
         .flipped {
             background: green;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -261,12 +265,13 @@
     <input id="raiseNum" type="number" placeholder="Amount" value="5">
 </fieldset>
 <fieldset id="actions">
-    <button id="join">Join</button>
-    <button id="ready">Ready</button>
-    <button id="unready">Unready</button>
+<%--    <button id="join">Join</button>--%>
+<%--    <button id="ready">Ready</button>--%>
+<%--    <button id="unready">Unready</button>--%>
     <button id="leave">Leave</button>
-    <button id="start">Start</button>
-    <button id="end">End</button>
+    <button id="start">Start Game</button>
+    <button id="end">End Lobby</button>
+    <button id="restart" class="hidden">Start new Game</button>
 </fieldset>
 
 <script type="module">
@@ -294,25 +299,47 @@
     }
 
     function handleUserMessage(message) {
-        const handMessage = JSON.parse(message.body);
-        console.log('Received on player hand channel:');
-        console.log(handMessage);
-        const hand = Array.from(handMessage.hand.hand);
+        const msg = JSON.parse(message.body);
+        console.log('Received on player private channel:');
+        console.log(msg);
+        if (msg.hand) {
+            const hand = Array.from(msg.hand.hand);
 
-        console.log('Player\'s hand:', hand);
+            console.log('Player\'s hand:', hand);
 
-        const playerCardContainer = document.querySelectorAll('#cards > div');
+            const playerCardContainer = document.querySelectorAll('#cards > div');
 
-        for (let i = 0; i < playerCardContainer.length; i++) {
-            playerCardContainer[i].textContent = hand[i].korttype + " " + hand[i].verdi;
+            for (let i = 0; i < playerCardContainer.length; i++) {
+                playerCardContainer[i].textContent = hand[i].korttype + " " + hand[i].verdi;
+            }
+        }
+
+        if (msg.msg) {
+            console.log('Received message:', msg.msg);
         }
     }
 
     function handleMessage(message) {
-        const status = JSON.parse(message.body);
+        const msg = JSON.parse(message.body);
         console.log('Received on lobby status channel:');
-        console.log(status);
-        const bordkort = status.bordKort;
+        console.log(msg);
+
+        if (msg.action) {
+            if (msg.action === 'START') {
+                document.getElementById('start').classList.add('hidden');
+                document.getElementById('restart').classList.remove('hidden');
+            }
+            else if (msg.action === 'END') {
+                const elem = document.querySelector('h1');
+                elem.textContent = 'Lobby har blitt avsluttet, returnerer til hovedsiden...';
+                setTimeout(() => {
+                    leave();
+                }, 5000);
+            }
+        }
+
+
+        const bordkort = msg.bordKort;
         if (bordkort) {
             const boardCardContainer = document.querySelector('.board-cardContainer');
             boardCardContainer.innerHTML = '';
@@ -323,7 +350,7 @@
                 boardCardContainer.appendChild(cardDiv);
             });
         }
-        const spillere = status.spillere;
+        const spillere = msg.spillere;
         if (spillere) {
             const spillereListe = document.getElementById('spillere');
             spillereListe.innerHTML = '';
@@ -368,13 +395,6 @@
         client.publish({destination: '/lobby/trekk/' + lobbyId, body: JSON.stringify(body)});
     }
 
-    function start() {
-        let body = {"action": "START", "spillerNavn": spillerNavn};
-        console.log('Starting');
-        console.log(body);
-        client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
-    }
-
     function check() {
         let body = {"trekk": "CHECK", "spillerNavn": spillerNavn, "mengde": 0};
         console.log('Checking');
@@ -389,13 +409,45 @@
         client.publish({destination: '/lobby/trekk/' + lobbyId, body: JSON.stringify(body)});
     }
 
+    function leave() {
+        let body = {"action": "LEAVE", "spillerNavn": spillerNavn};
+        console.log('Leaving the lobby');
+        console.log(body);
+        client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
+        window.location.href = window.location.origin + '/TexasHoldem';
+    }
+
+    function start() {
+        let body = {"action": "START", "spillerNavn": spillerNavn};
+        console.log('Starting');
+        console.log(body);
+        client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
+    }
+
+    function end() {
+        let body = {"action": "END", "spillerNavn": spillerNavn};
+        console.log('Starting');
+        console.log(body);
+        client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
+    }
+
+    function restart() {
+        let body = {"action": "RESTART", "spillerNavn": spillerNavn};
+        console.log('Starting');
+        console.log(body);
+        client.publish({destination: '/lobby/action/' + lobbyId, body: JSON.stringify(body)});
+    }
+
     document.getElementById('raise').addEventListener('click', raise);
     document.getElementById('call').addEventListener('click', call);
     document.getElementById('fold').addEventListener('click', fold);
     document.getElementById('check').addEventListener('click', check);
     document.getElementById('allin').addEventListener('click', allin);
 
+    document.getElementById('leave').addEventListener('click', leave);
     document.getElementById('start').addEventListener('click', start);
+    document.getElementById('end').addEventListener('click', end);
+    document.getElementById('restart').addEventListener('click', restart);
 </script>
 <%--</main>--%>
 </body>

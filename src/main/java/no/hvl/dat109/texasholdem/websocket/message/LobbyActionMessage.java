@@ -1,7 +1,9 @@
 package no.hvl.dat109.texasholdem.websocket.message;
 
 import no.hvl.dat109.texasholdem.enums.Action;
+import no.hvl.dat109.texasholdem.game.Spiller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,15 +13,22 @@ import java.util.List;
  * Den inneholder en liste med spillere som er i lobbyen etter handlingen.
  */
 public class LobbyActionMessage extends LobbyMessage {
-	private List<String> spillere;
+	private List<SpillerInfo> spillere;
 	private String spillerNavn;
 	private Action action;
 
-	public LobbyActionMessage(String lobbyId, List<String> spillere, String spillerNavn, Action action) {
+	public LobbyActionMessage(String lobbyId, List<Spiller> spillere, String spillerNavn, Action action) {
 		super(lobbyId);
-		this.spillere = spillere;
+		this.spillere = new ArrayList<>();
 		this.spillerNavn = spillerNavn;
 		this.action = action;
+		spillere.forEach(s -> {
+			SpillerInfo si = new SpillerInfo();
+			si.setNavn(s.getNavn());
+			si.setChips(s.getChips());
+			si.setStatus(s.getStatus());
+			this.spillere.add(si);
+		});
 	}
 
 	/**
@@ -29,11 +38,11 @@ public class LobbyActionMessage extends LobbyMessage {
 	public LobbyActionMessage() {
 	}
 
-	public List<String> getSpillere() {
+	public List<SpillerInfo> getSpillere() {
 		return spillere;
 	}
 
-	public void setSpillere(List<String> spillere) {
+	public void setSpillere(List<SpillerInfo> spillere) {
 		this.spillere = spillere;
 	}
 

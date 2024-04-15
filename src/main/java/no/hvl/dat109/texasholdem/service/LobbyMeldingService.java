@@ -61,7 +61,7 @@ public class LobbyMeldingService {
 		smt.convertAndSend("/lobbystatus/" + lobbyId, new LobbyTrekkMessage(lobbyId, spillerNavn, trekk, mengde));
 	}
 
-	public void sendAction(String lobbyId, List<String> spillere, String spillerNavn,
+	public void sendAction(String lobbyId, List<Spiller> spillere, String spillerNavn,
 	                       Action action) {
 		logger.info("Sender action til lobby {}", lobbyId);
 		smt.convertAndSend("/lobbystatus/" + lobbyId, new LobbyActionMessage(lobbyId, spillere, spillerNavn, action));
