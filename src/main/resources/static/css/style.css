@@ -1,5 +1,137 @@
-.div1, .div2 {
-    width: 50%;
-    padding: 10px;
-    box-sizing: border-box;
+html,
+body {
+    background-color: darkgrey;
+    margin: 0;
+    padding: 0;
+    overscroll-behavior: none;
+}
+
+main {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.game {
+    width: clamp(60vw, 80vw, 90vw);
+    height: clamp(30vh, 60vh, 80vh);
+    margin: 1em;
+    background: antiquewhite;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    min-width: 450px;
+    min-height: 350px;
+    max-width: 800px;
+    max-height: 600px;
+}
+
+.player {
+    height: 30%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.board {
+    height: 50%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.top {
+    height: 20%;
+    width: 100%;
+}
+
+.player-cardContainer {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 0.5em;
+}
+
+.card {
+    outline: 1px solid black;
+}
+
+.player-card {
+    width: 3em;
+    height: 4em;
+    background: dodgerblue;
+    margin: 0.1em;
+}
+
+.player-bar {
+    height: 100%;
+    width: 20%;
+}
+
+.center-bar {
+    height: 100%;
+    width: 60%;
+}
+
+.other-player {
+    width: 100%;
+    height: 20%;
+    display: flex;
+}
+
+#left-player-bar .other-player {
+    justify-content: flex-start;
+}
+
+#right-player-bar .other-player {
+    justify-content: flex-end;
+}
+
+.other-cardContainer {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    height: fit-content;
+    margin: 0.2em;
+}
+
+.other-card {
+    width: 1.5em;
+    height: 2em;
+    background: chocolate;
+    margin: 0.1em;
+}
+
+.board-cardContainer {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    height: fit-content;
+    margin: 0.2em;
+    justify-content: center;
+}
+
+.board-card {
+    width: 3em;
+    height: 4em;
+    background: darkgrey;
+    margin: 0.1em;
+}
+
+.flipped {
+    background: green;
+}
+
+.hidden {
+    display: none;
 }
