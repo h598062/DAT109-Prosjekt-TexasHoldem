@@ -202,6 +202,9 @@
                     <div id="player-bet">
                         Current Bet:
                     </div>
+                    <div id="dinTur" class="hidden" style="color: red; background-color: yellow">
+                        Din tur
+                    </div>
                 </div>
                 <div id="cards" class="player-cardContainer">
                     <div class="player-card card">
@@ -511,6 +514,13 @@
             if (msg.spillerSinTur) {
                 let nesteSpillerElement = document.querySelector('#nesteSpiller .info-val');
                 nesteSpillerElement.textContent = msg.spillerSinTur;
+                if (msg.spillerSinTur === spillerNavn) {
+                    let dinTur = document.getElementById("dinTur");
+                    dinTur.textContent = 'Din tur!';
+                    dinTur.classList.remove('hidden');
+                } else {
+                    document.getElementById('dinTur').classList.add('hidden');
+                }
             }
 
             if (msg.vinner) {
@@ -539,7 +549,7 @@
                     const li = document.createElement('li');
                     li.textContent = spiller.navn === undefined ? spiller : spiller.navn;
                     spillereListe.appendChild(li);
-                    if (spiller.name === spillerNavn) {
+                    if (spiller.navn === spillerNavn) {
                         document.getElementById('player-chips').textContent = 'Chips: ' + spiller.chips;
                         document.getElementById('player-bet').textContent = 'Current Bet: ' + spiller.currentBet;
                         continue;
