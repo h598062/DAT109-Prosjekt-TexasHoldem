@@ -39,7 +39,7 @@ public class HovedsideController {
 	@GetMapping("/")
 	public String getIndex(Model model) {
 		model.addAttribute("lobbies", lobbyService.getLobbies());
-		return "tmpMainpage";
+		return "hovedside";
 	}
 
 	/**

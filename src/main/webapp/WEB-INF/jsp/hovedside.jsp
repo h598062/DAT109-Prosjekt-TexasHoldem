@@ -3,24 +3,50 @@
 <!DOCTYPE html>
 <html lang="nb">
 <head>
-    <title>Texas hold’em</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Mainpage</title>
 </head>
 <body>
-    <h1>TEXAS HOLD’EM</h1>
+<h1>Velkommen til hovedsiden</h1>
 
-    <div>
-        <fieldset style="float:left;">
-            <c:forEach var="i" begin="1" items="${lobbies}" step="1">
-                <p>Lobby ${i}</p>
+<%--@elvariable id="errors" type="java.util.ArrayList<java.lang.String>"--%>
+<c:if test="${not empty errors}">
+    <fieldset>
+        <legend>Errors:</legend>
+        <ul>
+            <c:forEach items="${errors}" var="error">
+                <li style="color: red">${error}</li>
             </c:forEach>
-        </fieldset>
+        </ul>
+    </fieldset>
+</c:if>
 
-        <div style="float:left; margin-left:20px;">
-            <button>Lag ny lobby</button>
-        </div>
-
-        <div style="clear:both;"></div> <!-- Dette er for å rydde opp i floating elementer -->
-    </div>
+<fieldset>
+    <legend>Create Lobby</legend>
+    <form action="${pageContext.request.contextPath}/createLobby" method="post">
+        <label for="lobbyIdCreate">Lobby ID:</label><br>
+        <input type="text" id="lobbyIdCreate" name="lobbyIdCreate"><br>
+        <label for="lobbyLeder">Lobby Leader navn:</label><br>
+        <input type="text" id="lobbyLeder" name="lobbyLeder"><br>
+        <input type="submit" value="Create Lobby">
+    </form>
+</fieldset>
+<fieldset>
+    <legend>Join Lobby</legend>
+    <%--@elvariable id="lobbies" type="java.util.ArrayList<java.lang.String>"--%>
+    <c:if test="${not empty lobbies}">
+        <form action="${pageContext.request.contextPath}/joinLobby" method="post">
+            <label for="spillerNavn">Spiller navn:</label><br>
+            <input type="text" id="spillerNavn" name="spillerNavn"><br>
+            <ul>
+                <c:forEach items="${lobbies}" var="lobby" varStatus="status">
+                    <li><label for="lobbySelect${status.count}">${lobby}</label>
+                        <input type="radio" id="lobbySelect${status.count}" name="lobbySelect" value="${lobby}">
+                    </li>
+                </c:forEach>
+            </ul>
+            <input type="submit" value="Join Lobby">
+        </form>
+    </c:if>
+</fieldset>
 </body>
 </html>
