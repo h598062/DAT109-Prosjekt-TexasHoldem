@@ -549,7 +549,7 @@
                     const li = document.createElement('li');
                     li.textContent = spiller.navn === undefined ? spiller : spiller.navn;
                     spillereListe.appendChild(li);
-                    if (spiller.name === spillerNavn) {
+                    if (spiller.navn === spillerNavn) {
                         document.getElementById('player-chips').textContent = 'Chips: ' + spiller.chips;
                         document.getElementById('player-bet').textContent = 'Current Bet: ' + spiller.currentBet;
                         continue;
