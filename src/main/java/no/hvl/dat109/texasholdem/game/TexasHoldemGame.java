@@ -202,12 +202,9 @@ public class TexasHoldemGame {
 		spiller.setChips(0);
 		if (allInnMengde >= raiseTarget) {
 			raiseTarget = allInnMengde;
-			pott += allInnMengde;
-			spiller.setCurrentBet(allInnMengde);
-		} else {
-			pott += allInnMengde;
-			spiller.setCurrentBet(allInnMengde);
 		}
+		pott += allInnMengde;
+		spiller.setCurrentBet(allInnMengde + spiller.getCurrentBet());
 
 		spillere.stream().filter(s -> !s.equals(spiller) && s.getStatus().equals(Status.DONE))
 		        .forEach(s -> s.setStatus(Status.WAITING));
@@ -226,6 +223,7 @@ public class TexasHoldemGame {
 			erFerdig = true;
 			vinner   = enesteIgjen;
 			lms.sendVinner(vinner, lobbyId);
+			return null;
 		}
 		if (sjekkOmRundeErFerdig()) {
 			nesteRunde();
@@ -326,9 +324,9 @@ public class TexasHoldemGame {
 		return antallDone == spillere.size();
 	}
 
-	public Spiller startSpill() {
+	public void startSpill() {
 		if (erStartet) {
-			return null;
+			return;
 		}
 		erStartet     = true;
 		spillerSinTur = spillere.get(0); // velg den første i listen til å begynne
@@ -337,14 +335,13 @@ public class TexasHoldemGame {
 				new GameStatusMessage(lobbyId, spillere,
 						spillerSinTur, runde, pott, raiseTarget));
 		lms.sendKort(spillere, lobbyId);
-		return spillerSinTur;
 	}
 
-	public boolean isErStartet() {
+	public boolean erStartet() {
 		return erStartet;
 	}
 
-	public boolean isErFerdig() {
+	public boolean erFerdig() {
 		return erFerdig;
 	}
 

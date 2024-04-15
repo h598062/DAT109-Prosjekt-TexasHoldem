@@ -1,5 +1,6 @@
 package no.hvl.dat109.texasholdem.game;
 
+import no.hvl.dat109.texasholdem.enums.Status;
 import no.hvl.dat109.texasholdem.service.LobbyMeldingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +24,6 @@ public class Lobby {
 		this.spillere   = new ConcurrentHashMap<>();
 		this.lobbyLeder = new Spiller(lobbyLederNavn);
 		spillere.put(lobbyLederNavn, this.lobbyLeder);
-	}
-
-
-	/**
-	 * Metode skal kalles når spillet i lobbyen skal startes.
-	 */
-	public Spiller start() {
-		// TODO: Ferdigstill start-sekvens
-		game = new TexasHoldemGame(lms, lobbyId, (List<Spiller>) spillere.values());
-		return game.startSpill();
 	}
 
 	public String getLobbyId() {
@@ -91,5 +82,13 @@ public class Lobby {
 
 	public void setGame(TexasHoldemGame game) {
 		this.game = game;
+	}
+
+	public void resetSpillere() {
+		spillere.forEach((k, v) -> {
+			v.emptyHand();
+			v.setStatus(Status.WAITING);
+			v.setCurrentBet(0);
+		});
 	}
 }

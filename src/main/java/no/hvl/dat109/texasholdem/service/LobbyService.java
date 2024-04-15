@@ -96,6 +96,12 @@ public class LobbyService {
 			return;
 		}
 
+		if (game.erFerdig()) {
+			logger.warn("Spillet er ferdig, ingen trekk kan gjøres");
+			sms.sendMelding(spillerNavn, "{\"msg\":\"Spillet er ferdig, ingen trekk kan gjøres\"}");
+			return;
+		}
+
 		if (game.getSpillerSinTur() == null) {
 			logger.info("Ingen spillere skal gjøre et trekk i lobby {}, fortsetter med runden", lobbyId);
 			game.velgNesteSpiller();
@@ -295,11 +301,8 @@ public class LobbyService {
 					sms.sendMelding(spillerNavn, "{\"msg\":\"Du er ikke lobbyleder og kan ikke restarte spillet\"}");
 					break;
 				}
-				if (game.isErFerdig()) {
-					lobby.getSpillere().forEach(s -> {
-						s.emptyHand();
-						spiller.setStatus(Status.WAITING);
-					});
+				if (game.erFerdig()) {
+					lobby.resetSpillere();
 					game = new TexasHoldemGame(lms, lobbyId, new ArrayList<>(lobby.getSpillere()));
 					lobby.setGame(game);
 					lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.RESTART);
