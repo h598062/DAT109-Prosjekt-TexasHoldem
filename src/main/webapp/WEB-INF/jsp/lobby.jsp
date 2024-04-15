@@ -168,6 +168,17 @@
     <legend>Spillere</legend>
     <ul id="spillere"></ul>
 </fieldset>
+<fieldset>
+    <div>
+        <h3 id="forrigeTrekk">
+            Forrige trekk:
+        </h3>
+        <h3 id="nesteSpiller">
+
+        </h3>
+    </div>
+</fieldset>
+
 <fieldset id="game" class="game">
     <div id="left-player-bar" class="player-bar">
         <div class="other-player">
@@ -251,6 +262,7 @@
             </div>
         </div>
     </div>
+
 </fieldset>
 <fieldset id="gameControls">
     <button id="check">Check</button>
@@ -312,6 +324,32 @@
         const status = JSON.parse(message.body);
         console.log('Received on lobby status channel:');
         console.log(status);
+
+        if (status.trekk) {
+            let lastMove = document.getElementById('forrigeTrekk');
+            let trekkTekst = '';
+            switch (status.trekk) {
+                case 'ALL_IN':
+                    trekkTekst = 'gikk all in';
+                    break;
+                case 'CHECK':
+                    trekkTekst = 'valgte å checke';
+                    break;
+                case 'CALL':
+                    trekkTekst = 'valgte å calle';
+                    break;
+                case 'FOLD':
+                    trekkTekst = 'valgte å folde';
+                    break;
+                case 'RAISE':
+                    trekkTekst = 'høynet til ' + status.mengde;
+                    break;
+                default:
+                    trekkTekst = 'gjorde et ukjent trekk';
+            }
+            lastMove.textContent = 'Forrige trekk: ' + status.spillerNavn + ' ' + trekkTekst;
+        }
+
         const bordkort = status.bordKort;
         if (bordkort) {
             const boardCardContainer = document.querySelector('.board-cardContainer');
