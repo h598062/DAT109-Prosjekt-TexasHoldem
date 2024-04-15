@@ -165,6 +165,9 @@
                     <div class="info-txt">Vinner</div>
                     <div class="info-val"></div>
                 </div>
+                <div id="dinTur" class="hidden" style="color: red; background-color: yellow">
+                    Din tur
+                </div>
             </div>
             <%--</div>--%>
             <div class="board">
@@ -511,6 +514,13 @@
             if (msg.spillerSinTur) {
                 let nesteSpillerElement = document.querySelector('#nesteSpiller .info-val');
                 nesteSpillerElement.textContent = msg.spillerSinTur;
+                if (msg.spillerSinTur === spillerNavn) {
+                    let dinTur = document.getElementById("dinTur");
+                    dinTur.textContent = 'Din tur!';
+                    dinTur.classList.remove('hidden');
+                } else {
+                    document.getElementById('dinTur').classList.add('hidden');
+                }
             }
 
             if (msg.vinner) {
