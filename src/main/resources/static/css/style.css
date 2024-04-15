@@ -89,6 +89,10 @@ main {
     display: flex;
 }
 
+.other-player-navn {
+
+}
+
 #left-player-bar .other-player {
     justify-content: flex-start;
 }

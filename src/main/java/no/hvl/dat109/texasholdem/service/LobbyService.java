@@ -1,6 +1,7 @@
 package no.hvl.dat109.texasholdem.service;
 
 import no.hvl.dat109.texasholdem.enums.Action;
+import no.hvl.dat109.texasholdem.enums.Status;
 import no.hvl.dat109.texasholdem.enums.Trekk;
 import no.hvl.dat109.texasholdem.game.Lobby;
 import no.hvl.dat109.texasholdem.game.Spiller;
@@ -23,8 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class LobbyService {
-	Logger logger = LoggerFactory.getLogger(LobbyService.class);
-
 	@Autowired
 	private final LobbyMeldingService              lms;
 	@Autowired
@@ -33,6 +32,7 @@ public class LobbyService {
 	 * ingen direkte tilgang til lobbies hashmap utenfor denne klassen
 	 */
 	private final ConcurrentHashMap<String, Lobby> lobbies;
+	Logger logger = LoggerFactory.getLogger(LobbyService.class);
 
 	/**
 	 * Oppretter en ny lobby service.<br>
@@ -92,7 +92,9 @@ public class LobbyService {
 		Spiller         spiller = finnSpiller(spillerNavn, lobby);
 
 		// Returnererer null for å ikke få feilmelding når noen caller før game er startet
-		if (game == null) return;
+		if (game == null) {
+			return;
+		}
 
 		if (game.getSpillerSinTur() == null) {
 			logger.info("Ingen spillere skal gjøre et trekk i lobby {}, fortsetter med runden", lobbyId);
@@ -206,10 +208,10 @@ public class LobbyService {
 	}
 
 	public boolean doAction(String lobbyId, String spillerNavn, Action action) {
-		Lobby   lobby   = finnLobby(spillerNavn, lobbyId);
+		Lobby           lobby   = finnLobby(spillerNavn, lobbyId);
 		TexasHoldemGame game    = lobby.getGame();
-		Spiller spiller = finnSpiller(spillerNavn, lobby);
-		boolean suksess = false;
+		Spiller         spiller = finnSpiller(spillerNavn, lobby);
+		boolean         suksess = false;
 		switch (action) {
 			case JOIN:
 				logger.info("Spiller {} har joinet lobbyen {}", spillerNavn, lobbyId);
@@ -253,7 +255,7 @@ public class LobbyService {
 				break;
 			case START:
 				logger.info("Spiller {} prøver å starte spillet i lobbyen {} ", spillerNavn, lobbyId);
-				if(!spillerNavn.equals(lobby.getLobbyLeder().getNavn())) {
+				if (!spillerNavn.equals(lobby.getLobbyLeder().getNavn())) {
 					logger.warn("Spiller {} er ikke lobbyleder og kan ikke starte spillet", spillerNavn);
 					sms.sendMelding(spillerNavn, "{\"msg\":\"Du er ikke lobbyleder og kan ikke starte spillet\"}");
 					break;
@@ -269,9 +271,11 @@ public class LobbyService {
 				logger.info("Spiller {} prøver å stoppe spillet i lobbyen {} ", spillerNavn, lobbyId);
 				if (!lobby.getSpillere().contains(lobby.getLobbyLeder())) {
 					logger.warn("Lobbyleder er ikke lenger i lobbyen, spillet blir avsluttet");
-					sms.sendMelding(spillerNavn, "{\"msg\":\"Lobbyleder er ikke lenger i lobbyen, spillet avsluttes...\"}");
+					sms.sendMelding(spillerNavn,
+							"{\"msg\":\"Lobbyleder er ikke lenger i lobbyen, spillet avsluttes...\"}");
 					lobbies.remove(lobbyId);
 					lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.END);
+					suksess = true;
 					break;
 				}
 				if (!spillerNavn.equals(lobby.getLobbyLeder().getNavn())) {
@@ -282,6 +286,7 @@ public class LobbyService {
 				// fjern denne lobbyen fra lobby listen
 				lobbies.remove(lobbyId);
 				lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.END);
+				suksess = true;
 				break;
 			case RESTART:
 				logger.info("Spiller {} prøver å restarte spillet i lobbyen {} ", spillerNavn, lobbyId);
@@ -291,6 +296,10 @@ public class LobbyService {
 					break;
 				}
 				if (game.isErFerdig()) {
+					lobby.getSpillere().forEach(s -> {
+						s.emptyHand();
+						spiller.setStatus(Status.WAITING);
+					});
 					game = new TexasHoldemGame(lms, lobbyId, new ArrayList<>(lobby.getSpillere()));
 					lobby.setGame(game);
 					lms.sendAction(lobbyId, lobby.getSpillere(), spillerNavn, Action.RESTART);

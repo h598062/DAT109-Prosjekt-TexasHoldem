@@ -46,34 +46,49 @@
 
 <fieldset id="game" class="game">
     <div id="left-player-bar" class="player-bar">
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
+            </div>
+            <div class="other-player-navn">
+
             </div>
         </div>
     </div>
@@ -96,34 +111,49 @@
         </div>
     </div>
     <div id="right-player-bar" class="player-bar">
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
+            <div class="other-player-navn">
+
+            </div>
         </div>
-        <div class="other-player">
+        <div class="other-player hidden">
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
+            </div>
+            <div class="other-player-navn">
+
             </div>
         </div>
     </div>
@@ -197,9 +227,32 @@
         console.log(msg);
 
         if (msg.action) {
+            for (let spiller of msg.spillere) {
+                if (spiller.navn === spillerNavn) continue;
+                const spElm = document.getElementById('spiller-' + spiller.navn);
+                if (spElm) {
+                    spElm.querySelector('.other-player-navn').textContent = spiller.navn;
+                } else {
+                    console.log('Adding player to lobby:', spiller.navn)
+                    const otherPlayerElms = document.querySelectorAll('.other-player.hidden');
+                    const elm = otherPlayerElms[0];
+                    elm.classList.remove('hidden');
+                    elm.id = "spiller-" + spiller.navn;
+                    elm.querySelector('.other-player-navn').textContent = spiller.navn;
+                }
+            }
+
             if (msg.action === 'START') {
                 document.getElementById('start').classList.add('hidden');
                 document.getElementById('restart').classList.remove('hidden');
+            }
+            else if (msg.action === 'RESTART') {
+                const boardCardContainer = document.querySelector('.board-cardContainer');
+                boardCardContainer.innerHTML = '';
+                const playerCardContainer = document.querySelectorAll('#cards > div');
+                for (let i = 0; i < playerCardContainer.length; i++) {
+                    playerCardContainer[i].textContent = '';
+                }
             }
             else if (msg.action === 'END') {
                 const elem = document.querySelector('h1');
