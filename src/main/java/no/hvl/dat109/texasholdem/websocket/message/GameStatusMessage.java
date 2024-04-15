@@ -37,6 +37,7 @@ public class GameStatusMessage extends LobbyMessage {
 			si.setNavn(s.getNavn());
 			si.setChips(s.getChips());
 			si.setStatus(s.getStatus());
+			si.setCurrentBet(s.getCurrentBet());
 			this.spillere.add(si);
 		});
 	}

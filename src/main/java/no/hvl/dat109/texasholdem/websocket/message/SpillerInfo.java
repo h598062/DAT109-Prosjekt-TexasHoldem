@@ -6,11 +6,13 @@ public class SpillerInfo {
 	private String navn;
 	private int    chips;
 	private Status status;
+	private int   currentBet;
 
-	public SpillerInfo(String navn, int chips, Status status) {
+	public SpillerInfo(String navn, int chips, Status status, int currentBet) {
 		this.navn   = navn;
 		this.chips  = chips;
 		this.status = status;
+		this.currentBet = currentBet;
 	}
 
 	public SpillerInfo() {
@@ -38,5 +40,13 @@ public class SpillerInfo {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	public int getCurrentBet() {
+		return currentBet;
+	}
+
+	public void setCurrentBet(int currentBet) {
+		this.currentBet = currentBet;
 	}
 }

@@ -16,9 +16,21 @@ main {
     flex-grow: 1;
 }
 
+.ul-horizontal {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ul-horizontal li {
+    margin: 0.5em;
+}
+
 .game {
     width: clamp(60vw, 80vw, 90vw);
-    height: clamp(30vh, 60vh, 80vh);
+    height: clamp(30vh, 70vh, 80vh);
     margin: 1em;
     background: antiquewhite;
     padding: 0;
@@ -40,7 +52,7 @@ main {
 }
 
 .board {
-    height: 50%;
+    height: 30%;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -49,9 +61,41 @@ main {
 }
 
 .top {
-    height: 20%;
+    height: 40%;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0.5em;
 }
+
+.game-info-container {
+    outline: 1px solid black;
+    background: lightgrey;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 2em;
+    height: 100%;
+}
+
+.game-info {
+    outline: black;
+    height: 25%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-txt {
+    background: orange;
+    margin: 0.1em;
+    padding: 0.1em;
+    border-radius: 0.2em;
+}
+
+.info-val {}
 
 .player-cardContainer {
     width: 100%;
@@ -64,6 +108,7 @@ main {
 
 .card {
     outline: 1px solid black;
+    border-radius: 0.2em;
 }
 
 .player-card {
@@ -87,10 +132,11 @@ main {
     width: 100%;
     height: 20%;
     display: flex;
+    flex-direction: column;
 }
 
 .other-player-navn {
-
+    margin: 0.2em;
 }
 
 #left-player-bar .other-player {

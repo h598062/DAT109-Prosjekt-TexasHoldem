@@ -144,7 +144,7 @@ public class LobbyService {
 		if (spiller == null) {
 			logger.warn("Spiller {} does not exist in lobby {}", spillerNavn, lobby.getLobbyId());
 			sms.sendMelding(spillerNavn,
-					String.format("Spiller %s finnes ikke i lobby %s", spillerNavn, lobby.getLobbyId()));
+					String.format("{\"msg\":\"Spiller %s finnes ikke i lobby %s\"}", spillerNavn, lobby.getLobbyId()));
 			throw new IllegalArgumentException("Spiller does not exist in lobby");
 		}
 		return spiller;
@@ -161,14 +161,14 @@ public class LobbyService {
 	private Lobby finnLobby(String spillerNavn, String lobbyId) {
 		if (lobbyId == null || lobbyId.isBlank()) {
 			logger.warn("LobbyId is missing or blank in message from: {}", spillerNavn);
-			sms.sendMelding(spillerNavn, "Melding mangler lobbyId");
+			sms.sendMelding(spillerNavn, "{\"msg\":\"Melding mangler lobbyId\"}");
 			throw new IllegalArgumentException("LobbyId is missing or blank");
 		}
 		logger.info("lobbyer: {}", getLobbies());
 		Lobby lobby = getLobby(lobbyId);
 		if (lobby == null) {
 			logger.warn("Lobby {} does not exist", lobbyId);
-			sms.sendMelding(spillerNavn, String.format("Lobby %s finnes ikke", lobbyId));
+			sms.sendMelding(spillerNavn, String.format("{\"msg\":\"Lobby %s finnes ikke\"}", lobbyId));
 			throw new IllegalArgumentException("Lobby does not exist");
 		}
 		return lobby;

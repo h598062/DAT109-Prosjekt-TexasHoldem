@@ -31,78 +31,102 @@
 <h1>Lobby ${lobbyId}</h1>
 <fieldset>
     <legend>Spillere</legend>
-    <ul id="spillere"></ul>
-</fieldset>
-<fieldset>
-    <div>
-        <h3 id="forrigeTrekk">
-            Forrige trekk:
-        </h3>
-        <h3 id="nesteSpiller">
-            Neste spiller:
-        </h3>
-        <h3 id="pott">
-            Pott:
-        </h3>
-        <h3 id="raiseTarget">
-            Raise target:
-        </h3>
-        <h3 id="vinner" class="hidden">
-            Vinner:
-        </h3>
-    </div>
+    <ul id="spillere" class="ul-horizontal"></ul>
 </fieldset>
 
 <fieldset id="game" class="game">
     <div id="left-player-bar" class="player-bar">
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
     </div>
     <div id="center-bar" class="center-bar">
-        <div class="top"></div>
+        <div class="top">
+            <div class="game-info-container">
+                <div id="forrigeTrekk" class="game-info">
+                    <div class="info-txt">Forrige trekk</div>
+                    <div class="info-val"></div>
+                </div>
+                <div id="nesteSpiller" class="game-info">
+                    <div class="info-txt">Neste spiller</div>
+                    <div class="info-val"></div>
+                </div>
+                <div id="pott" class="game-info">
+                    <div class="info-txt">Pott</div>
+                    <div class="info-val"></div>
+                </div>
+                <div id="raiseTarget" class="game-info">
+                    <div class="info-txt">Raise target</div>
+                    <div class="info-val"></div>
+                </div>
+                <div id="vinner" class="game-info hidden">
+                    <div class="info-txt">Vinner</div>
+                    <div class="info-val"></div>
+                </div>
+            </div>
+        </div>
         <div class="board">
             <div class="board-cardContainer">
                 <div class="board-card card flipped"></div>
@@ -121,48 +145,68 @@
     </div>
     <div id="right-player-bar" class="player-bar">
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
         <div class="other-player hidden">
+            <div class="other-player-navn">
+            </div>
             <div class="other-cardContainer">
                 <div class="other-card card"></div>
                 <div class="other-card card"></div>
             </div>
-            <div class="other-player-navn">
-
+            <div class="other-player-info">
+                <div class="other-player-status"></div>
+                <div class="other-player-chips"></div>
+                <div class="other-player-bet"></div>
             </div>
         </div>
     </div>
@@ -176,9 +220,9 @@
     <input id="raiseNum" type="number" placeholder="Amount" value="5">
 </fieldset>
 <fieldset id="actions">
-<%--    <button id="join">Join</button>--%>
-<%--    <button id="ready">Ready</button>--%>
-<%--    <button id="unready">Unready</button>--%>
+    <%--    <button id="join">Join</button>--%>
+    <%--    <button id="ready">Ready</button>--%>
+    <%--    <button id="unready">Unready</button>--%>
     <button id="leave">Leave</button>
     <button id="start">Start Game</button>
     <button id="end">End Lobby</button>
@@ -224,10 +268,6 @@
                 playerCardContainer[i].textContent = hand[i].korttype + " " + hand[i].verdi;
             }
         }
-
-        if (msg.msg) {
-            console.log('Received message:', msg.msg);
-        }
     }
 
     function handleMessage(message) {
@@ -254,16 +294,17 @@
             if (msg.action === 'START') {
                 document.getElementById('start').classList.add('hidden');
                 document.getElementById('restart').classList.remove('hidden');
-            }
-            else if (msg.action === 'RESTART') {
+            } else if (msg.action === 'RESTART') {
+                document.getElementById('vinner').classList.add('hidden');
+                document.getElementById('raiseTarget').classList.remove('hidden');
+                document.getElementById('nesteSpiller').classList.remove('hidden');
                 const boardCardContainer = document.querySelector('.board-cardContainer');
                 boardCardContainer.innerHTML = '';
                 const playerCardContainer = document.querySelectorAll('#cards > div');
                 for (let i = 0; i < playerCardContainer.length; i++) {
                     playerCardContainer[i].textContent = '';
                 }
-            }
-            else if (msg.action === 'END') {
+            } else if (msg.action === 'END') {
                 const elem = document.querySelector('h1');
                 elem.textContent = 'Lobby har blitt avsluttet, returnerer til hovedsiden...';
                 setTimeout(() => {
@@ -272,7 +313,7 @@
             }
         }
         if (msg.trekk) {
-            let lastMove = document.getElementById('forrigeTrekk');
+            let lastMove = document.querySelector('#forrigeTrekk > .info-val');
             let trekkTekst = '';
             switch (msg.trekk) {
                 case 'ALL_IN':
@@ -293,28 +334,30 @@
                 default:
                     trekkTekst = 'gjorde et ukjent trekk';
             }
-            lastMove.textContent = 'Forrige trekk: ' + msg.spillerNavn + ' ' + trekkTekst;
+            lastMove.textContent = msg.spillerNavn + ' ' + trekkTekst;
         }
 
         if (msg.pott) {
-            let pottElement = document.getElementById('pott');
-            pottElement.textContent = 'Pott: ' + msg.pott;
+            let pottElement = document.querySelector('#pott > .info-val');
+            pottElement.textContent = msg.pott;
         }
 
         if (msg.raiseTarget) {
-            let raiseTargetElement = document.getElementById('raiseTarget');
-            raiseTargetElement.textContent = 'Raise Target: ' + msg.raiseTarget;
+            let raiseTargetElement = document.querySelector('#raiseTarget > .info-val');
+            raiseTargetElement.textContent = msg.raiseTarget;
         }
 
         if (msg.spillerSinTur) {
-            let nesteSpillerElement = document.getElementById('nesteSpiller');
-            nesteSpillerElement.textContent = 'Neste spiller: ' + msg.spillerSinTur;
+            let nesteSpillerElement = document.querySelector('#nesteSpiller .info-val');
+            nesteSpillerElement.textContent = msg.spillerSinTur;
         }
 
         if (msg.vinner) {
-            let vinnerElement = document.getElementById('vinner');
-            vinnerElement.textContent = 'Vinner: ' + msg.vinner;
+            let vinnerElement = document.querySelector('#vinner > .info-val');
+            vinnerElement.textContent = msg.vinner;
             document.getElementById('vinner').classList.remove('hidden');
+            document.getElementById('raiseTarget').classList.add('hidden');
+            document.getElementById('nesteSpiller').classList.add('hidden');
         }
 
         const bordkort = msg.bordKort;
@@ -336,6 +379,12 @@
                 const li = document.createElement('li');
                 li.textContent = spiller.navn === undefined ? spiller : spiller.navn;
                 spillereListe.appendChild(li);
+                const spElm = document.getElementById('spiller-' + spiller.navn);
+                if (spElm) {
+                    spElm.querySelector('.other-player-status').textContent = spiller.status;
+                    spElm.querySelector('.other-player-chips').textContent = 'Chips: ' + spiller.chips;
+                    spElm.querySelector('.other-player-bet').textContent = 'Bet: ' + spiller.currentBet;
+                }
             }
         }
     }
