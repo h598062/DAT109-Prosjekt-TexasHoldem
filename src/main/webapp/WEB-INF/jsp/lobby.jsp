@@ -165,9 +165,6 @@
                     <div class="info-txt">Vinner</div>
                     <div class="info-val"></div>
                 </div>
-                <div id="dinTur" class="hidden" style="color: red; background-color: yellow">
-                    Din tur
-                </div>
             </div>
             <%--</div>--%>
             <div class="board">
@@ -204,6 +201,9 @@
                     </div>
                     <div id="player-bet">
                         Current Bet:
+                    </div>
+                    <div id="dinTur" class="hidden" style="color: red; background-color: yellow">
+                        Din tur
                     </div>
                 </div>
                 <div id="cards" class="player-cardContainer">
