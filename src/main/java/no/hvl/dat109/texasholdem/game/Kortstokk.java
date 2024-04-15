@@ -16,7 +16,7 @@ public class Kortstokk {
     public Kortstokk() {
         kortstokk = new ArrayList<>();
         for (Korttype type : Korttype.values()) {
-            for (int i = 1; i < 13; i++) {
+            for (int i = 2; i < 15; i++) {
                 kortstokk.add(new Kort(type, i));
             }
         }
