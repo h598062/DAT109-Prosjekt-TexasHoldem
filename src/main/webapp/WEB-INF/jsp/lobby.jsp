@@ -39,7 +39,16 @@
             Forrige trekk:
         </h3>
         <h3 id="nesteSpiller">
-
+            Neste spiller:
+        </h3>
+        <h3 id="pott">
+            Pott:
+        </h3>
+        <h3 id="raiseTarget">
+            Raise target:
+        </h3>
+        <h3 id="vinner" class="hidden">
+            Vinner:
         </h3>
     </div>
 </fieldset>
@@ -232,6 +241,27 @@
                     trekkTekst = 'gjorde et ukjent trekk';
             }
             lastMove.textContent = 'Forrige trekk: ' + msg.spillerNavn + ' ' + trekkTekst;
+        }
+
+        if (msg.pott) {
+            let pottElement = document.getElementById('pott');
+            pottElement.textContent = 'Pott: ' + msg.pott;
+        }
+
+        if (msg.raiseTarget) {
+            let raiseTargetElement = document.getElementById('raiseTarget');
+            raiseTargetElement.textContent = 'Raise Target: ' + msg.raiseTarget;
+        }
+
+        if (msg.spillerSinTur) {
+            let nesteSpillerElement = document.getElementById('nesteSpiller');
+            nesteSpillerElement.textContent = 'Neste spiller: ' + msg.spillerSinTur;
+        }
+
+        if (msg.vinner) {
+            let vinnerElement = document.getElementById('vinner');
+            vinnerElement.textContent = 'Vinner: ' + msg.vinner;
+            document.getElementById('vinner').classList.remove('hidden');
         }
 
         const bordkort = msg.bordKort;
