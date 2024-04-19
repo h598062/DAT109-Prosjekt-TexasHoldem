@@ -372,17 +372,20 @@
             const msg = JSON.parse(message.body);
             console.log('Received on player private channel:');
             console.log(msg);
-            if (msg.hand) {
+            if (msg.hand !== undefined) {
                 const hand = Array.from(msg.hand.hand);
 
                 console.log('Player\'s hand:', hand);
 
-                const playerCardContainer = document.querySelectorAll('#cards > div');
+                setPlayerCards(hand);
+            }
+        }
 
-                for (let i = 0; i < playerCardContainer.length; i++) {
-                    playerCardContainer[i].querySelector('.symbol').textContent = getKortSymbol(hand[i].korttype);
-                    playerCardContainer[i].querySelector('.value').textContent = getKortVerdi(hand[i].verdi);
-                }
+        function setPlayerCards(cards) {
+            const playerCardContainer = document.querySelectorAll('#cards > div');
+            for (let i = 0; i < playerCardContainer.length; i++) {
+                playerCardContainer[i].querySelector('.symbol').textContent = getKortSymbol(cards[i].korttype);
+                playerCardContainer[i].querySelector('.value').textContent = getKortVerdi(cards[i].verdi);
             }
         }
 
@@ -439,7 +442,7 @@
             console.log('Received on lobby status channel:');
             console.log(msg);
 
-            if (msg.action) {
+            if (msg.action !== undefined) {
                 for (let spiller of msg.spillere) {
                     if (spiller.navn === spillerNavn) continue;
                     const spElm = document.getElementById('spiller-' + spiller.navn);
@@ -462,12 +465,13 @@
                     document.getElementById('vinner').classList.add('hidden');
                     document.getElementById('raiseTarget').classList.remove('hidden');
                     document.getElementById('nesteSpiller').classList.remove('hidden');
-                    const boardCardContainer = document.querySelector('.board-cardContainer');
-                    boardCardContainer.innerHTML = '';
-                    const playerCardContainer = document.querySelectorAll('#cards > div');
-                    for (let i = 0; i < playerCardContainer.length; i++) {
-                        playerCardContainer[i].textContent = '';
+                    const cardElms = document.querySelectorAll('.board-card');
+                    for (let i = 0; i < cardElms.length; i++) {
+                        cardElms[i].classList.remove("flipped");
+                        cardElms[i].querySelector('.symbol').textContent = "";
+                        cardElms[i].querySelector('.value').textContent = "";
                     }
+                    setPlayerCards([{korttype: '', verdi: ''}, {korttype: '', verdi: ''}]); // ikkje spørr
                 } else if (msg.action === 'END') {
                     const elem = document.querySelector('h1');
                     elem.textContent = 'Lobby har blitt avsluttet, returnerer til hovedsiden...';
@@ -476,7 +480,7 @@
                     }, 5000);
                 }
             }
-            if (msg.trekk) {
+            if (msg.trekk !== undefined) {
                 let lastMove = document.querySelector('#forrigeTrekk > .info-val');
                 let trekkTekst = '';
                 switch (msg.trekk) {
@@ -501,17 +505,17 @@
                 lastMove.textContent = msg.spillerNavn + ' ' + trekkTekst;
             }
 
-            if (msg.pott) {
+            if (msg.pott !== undefined) {
                 let pottElement = document.querySelector('#pott > .info-val');
                 pottElement.textContent = msg.pott;
             }
 
-            if (msg.raiseTarget) {
+            if (msg.raiseTarget !== undefined) {
                 let raiseTargetElement = document.querySelector('#raiseTarget > .info-val');
                 raiseTargetElement.textContent = msg.raiseTarget;
             }
 
-            if (msg.spillerSinTur) {
+            if (msg.spillerSinTur !== undefined) {
                 let nesteSpillerElement = document.querySelector('#nesteSpiller .info-val');
                 nesteSpillerElement.textContent = msg.spillerSinTur;
                 if (msg.spillerSinTur === spillerNavn) {
@@ -523,26 +527,26 @@
                 }
             }
 
-            if (msg.vinner) {
+            if (msg.vinner !== undefined) {
                 let vinnerElement = document.querySelector('#vinner > .info-val');
                 vinnerElement.textContent = msg.vinner;
                 document.getElementById('vinner').classList.remove('hidden');
                 document.getElementById('raiseTarget').classList.add('hidden');
                 document.getElementById('nesteSpiller').classList.add('hidden');
+                document.querySelector('#forrigeTrekk > .info-val').textContent = msg.vinner + ' vant potten!';
             }
 
             const bordkort = msg.bordKort;
-            if (bordkort) {
+            if (bordkort !== undefined) {
                 const cardElms = document.querySelectorAll('.board-card');
                 for (let i = 0; i < bordkort.length; i++) {
                     cardElms[i].classList.add("flipped");
                     cardElms[i].querySelector('.symbol').textContent = getKortSymbol(bordkort[i].korttype);
                     cardElms[i].querySelector('.value').textContent = getKortVerdi(bordkort[i].verdi);
                 }
-
             }
             const spillere = msg.spillere;
-            if (spillere) {
+            if (spillere !== undefined) {
                 const spillereListe = document.getElementById('spillere');
                 spillereListe.innerHTML = '';
                 for (let spiller of spillere) {

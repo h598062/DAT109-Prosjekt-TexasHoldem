@@ -42,6 +42,7 @@ public class TexasHoldemGame {
 		vinner = null;
 
 		raiseTarget = 0;
+		pott		= 0;
 
 		kortstokk     = new Kortstokk();
 		this.runde    = Round.PREFLOP;
@@ -222,7 +223,7 @@ public class TexasHoldemGame {
 		if (enesteIgjen != null) {
 			erFerdig = true;
 			vinner   = enesteIgjen;
-			lms.sendVinner(vinner, lobbyId);
+			handleVinner();
 			return null;
 		}
 		if (sjekkOmRundeErFerdig()) {
@@ -234,6 +235,14 @@ public class TexasHoldemGame {
 				new GameStatusMessage(lobbyId, spillere,
 						spillerSinTur, runde, pott, raiseTarget));
 		return spillerSinTur;
+	}
+
+	public void handleVinner() {
+		lms.sendVinner(vinner, lobbyId);
+		vinner.setChips(vinner.getChips() + pott);
+		lms.sendSpillStatus(lobbyId,
+				new GameStatusMessage(lobbyId, spillere,
+						spillerSinTur, runde, pott, raiseTarget));
 	}
 
 
@@ -262,7 +271,7 @@ public class TexasHoldemGame {
 			case RIVER:
 				vinner = sjekkVinner();
 				erFerdig = true;
-				lms.sendVinner(vinner, lobbyId);
+				handleVinner();
 				return;
 		}
 		lms.sendSpillStatus(lobbyId,
