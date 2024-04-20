@@ -471,7 +471,6 @@
                         cardElms[i].querySelector('.symbol').textContent = "";
                         cardElms[i].querySelector('.value').textContent = "";
                     }
-                    setPlayerCards([{korttype: '', verdi: ''}, {korttype: '', verdi: ''}]); // ikkje spørr
                 } else if (msg.action === 'END') {
                     const elem = document.querySelector('h1');
                     elem.textContent = 'Lobby har blitt avsluttet, returnerer til hovedsiden...';
